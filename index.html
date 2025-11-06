@@ -1,251 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>GymLog PWA</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="src/modules/app.js"></script>
 
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+      body {
+        font-family: "Inter", sans-serif;
+      }
     </style>
-</head>
-<body class="bg-black flex flex-col h-screen">
-
+  </head>
+  <body class="bg-black flex flex-col h-screen">
     <header class="bg-neutral-950 shadow-md sticky top-0 z-10">
-        <div class="container mx-auto max-w-lg p-4 flex justify-between items-center">
-            <button id="btn-header-back" class="text-blue-400 hidden">
-                <i data-lucide="arrow-left"></i>
-            </button>
-            <h1 id="header-title" class="text-xl font-bold text-yellow-500 text-center flex-1">
-                Minhas Rotinas
-            </h1>
-        </div>
+      <div
+        class="container mx-auto max-w-lg p-4 flex justify-between items-center"
+      >
+        <button id="btn-header-back" class="text-blue-400 hidden">
+          <i data-lucide="arrow-left"></i>
+        </button>
+        <h1
+          id="header-title"
+          class="text-xl font-bold text-yellow-500 text-center flex-1"
+        >
+          Minhas Rotinas
+        </h1>
+      </div>
     </header>
 
-    <main id="app-container" class="flex-1 overflow-y-auto">
-        <div class="container mx-auto max-w-lg p-4 relative h-full flex flex-col gap-2">
-            <div id="screen-1" class="page active space-y-4">
-                
-                <div class="routine-card flex justify-between items-center bg-neutral-950 p-5 border border-neutral-800 rounded-lg shadow-lg cursor-pointer hover:bg-neutral-900 gap-4" data-routine-id="1" data-routine-name="Treino A: Peito/Tríceps">
-                    <img src="./src/assets/supino.png" width="50" alt="">
-                    <div class="w-80">
-                        <h2 class="text-2xl font-semibold text-yellow-500">Treino A</h2>
-                        <p class="text-gray-500">Peito / Tríceps</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="text-gray-500"></i>
-                </div>
-                <div class="routine-card flex justify-between items-center bg-neutral-950 p-5 border border-neutral-800 rounded-lg shadow-lg cursor-pointer hover:bg-neutral-900 gap-4" data-routine-id="1" data-routine-name="Treino A: Peito/Tríceps">
-                    <img src="./src/assets/biceps.png" width="50" alt="">
-                    <div class="w-80">
-                        <h2 class="text-2xl font-semibold text-yellow-500">Treino B</h2>
-                        <p class="text-gray-500">Costas / Biceps</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="text-gray-500"></i>
-                </div>
-                <div class="routine-card flex justify-between items-center bg-neutral-950 p-5 border border-neutral-800 rounded-lg shadow-lg cursor-pointer hover:bg-neutral-900 gap-4" data-routine-id="1" data-routine-name="Treino A: Peito/Tríceps">
-                    <img src="./src/assets/leg-press.png" width="50" alt="">
-                    <div class="w-80">
-                        <h2 class="text-2xl font-semibold text-yellow-500">Treino C</h2>
-                        <p class="text-gray-500">Pernas / Ombros</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="text-gray-500"></i>
-                </div>
-            </div>
-        <div class="bg-sky-900 w-16 h-16 rounded-full flex justify-center items-center bottom-4 right-4 absolute cursor-pointer hover:bg-sky-800">
-                <i data-lucide="plus" class="text-gray-100"></i>
-        </div>
-
-<!-- 
-            <div id="screen-2" class="page space-y-6">
-                <div class="text-center">
-                    <p class="text-sm text-blue-400 uppercase">Exercício 1 de 6</p>
-                    <h2 class="text-3xl font-bold text-white">Supino Reto</h2>
-                </div>
-                <div class="space-y-3">
-                    <div class="grid grid-cols-4 gap-2 text-center text-sm text-gray-400 px-2">
-                        <span>Série</span>
-                        <span>Reps</span>
-                        <span>Carga (kg)</span>
-                        <span>Feito</span>
-                    </div>
-
-                    <div class="flex items-center bg-gray-800 p-3 rounded-lg gap-3">
-                        <span class="w-1/4 text-center font-semibold text-lg">1</span>
-                        <input type="number" placeholder="8-12" class="w-1/4 p-2 bg-gray-700 rounded text-center text-white">
-                        <input type="number" placeholder="80" class="w-1/4 p-2 bg-gray-700 rounded text-center text-white">
-                        <button class="w-1/4 flex justify-center text-gray-500">
-                            <i data-lucide="circle" class="h-7 w-7"></i>
-                        </button>
-                    </div>
-                    <div class="flex items-center bg-gray-800 p-3 rounded-lg gap-3">
-                        <span class="w-1/4 text-center font-semibold text-lg">2</span>
-                        <input type="number" placeholder="8-12" class="w-1/4 p-2 bg-gray-700 rounded text-center text-white">
-                        <input type="number" placeholder="80" class="w-1/4 p-2 bg-gray-700 rounded text-center text-white">
-                        <button class="w-1/4 flex justify-center text-gray-500">
-                            <i data-lucide="circle" class="h-7 w-7"></i>
-                        </button>
-                    </div>
-                    <div class="flex items-center bg-gray-800 p-3 rounded-lg gap-3">
-                        <span class="w-1/4 text-center font-semibold text-lg">3</span>
-                        <input type="number" placeholder="8-12" class="w-1/4 p-2 bg-gray-700 rounded text-center text-white">
-                        <input type="number" placeholder="80" class="w-1/4 p-2 bg-gray-700 rounded text-center text-white">
-                        <button class="w-1/4 flex justify-center text-gray-500">
-                            <i data-lucide="circle" class="h-7 w-7"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="text-center">
-                    <button id="btn-timer" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center w-full max-w-xs mx-auto">
-                        <i data-lucide="timer" class="mr-2"></i>
-                        Iniciar Descanso (90s)
-                    </button>
-                </div>
-
-                <div class="flex justify-between items-center pt-4">
-                    <button class="bg-gray-700 py-3 px-5 rounded-lg text-sm">Anterior</button>
-                    <button id="btn-finish" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-5 rounded-lg">
-                        Finalizar Treino
-                    </button>
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-5 rounded-lg text-sm">Próximo</button>
-                </div>
-                
-            </div>
-            <div id="screen-3" class="page space-y-4">
-                <button id="btn-add-routine" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg flex items-center justify-center">
-                    <i data-lucide="plus" class="mr-2"></i>
-                    Adicionar Nova Rotina
-                </button>
-                <div class="bg-gray-800 p-4 rounded-lg space-y-3">
-                    <div class="flex gap-2">
-                        <input type="text" value="Treino A: Peito/Tríceps" class="flex-1 p-2 bg-gray-700 rounded text-white font-semibold">
-                        <button class="p-2 bg-red-600 rounded text-white">
-                            <i data-lucide="trash-2" class="h-5 w-5"></i>
-                        </button>
-                    </div>
-                    <div class="space-y-2 pl-2">
-                        <div class="flex gap-2 items-center">
-                            <input type="text" value="Supino Reto" class="flex-1 p-2 bg-gray-700 rounded text-white text-sm">
-                            <button class="p-1 text-gray-500">
-                                <i data-lucide="trash-2" class="h-4 w-4"></i>
-                            </button>
-                        </div>
-                        <div class="flex gap-2 items-center">
-                            <input type="text" value="Crucifixo Inclinado" class="flex-1 p-2 bg-gray-700 rounded text-white text-sm">
-                            <button class="p-1 text-gray-500">
-                                <i data-lucide="trash-2" class="h-4 w-4"></i>
-                            </button>
-                        </div>
-                        <div class="flex gap-2 items-center">
-                            <input type="text" value="Tríceps Pulley" class="flex-1 p-2 bg-gray-700 rounded text-white text-sm">
-                            <button class="p-1 text-gray-500">
-                                <i data-lucide="trash-2" class="h-4 w-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <button class="w-full bg-gray-700 hover:bg-gray-600 text-blue-300 text-sm font-medium p-2 rounded-lg flex items-center justify-center">
-                        <i data-lucide="plus-circle" class="mr-2 h-4 w-4"></i>
-                        Adicionar Exercício
-                    </button>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg space-y-3">
-                    <div class="flex gap-2">
-                        <input type="text" value="Treino B: Costas/Bíceps" class="flex-1 p-2 bg-gray-700 rounded text-white font-semibold">
-                        <button class="p-2 bg-red-600 rounded text-white">
-                            <i data-lucide="trash-2" class="h-5 w-5"></i>
-                        </button>
-                    </div>
-                </div>
-
-
-            </div>
--->
-
-
-        </div>
-    </main>
-
-    <!-- 
-        Aqui é onde você registraria o Service Worker.
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(registration => console.log('SW registrado: ', registration))
-                        .catch(error => console.log('Falha ao registrar SW: ', error));
-                });
-            }
-        </script>
-    -->
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-
-            const headerTitle = document.getElementById('header-title');
-            const btnHeaderBack = document.getElementById('btn-header-back');
-            const btnHeaderEdit = document.getElementById('btn-header-edit');
-            const pages = document.querySelectorAll('.page');
-
-            function navigate(pageId, title) {
-                pages.forEach(page => page.classList.remove('active'));
-
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                }
-
-                headerTitle.textContent = title;
-
-                if (pageId === 'screen-1') {
-                    btnHeaderBack.classList.add('hidden');
-                    btnHeaderEdit.classList.remove('hidden');
-                } else {
-                    btnHeaderBack.classList.remove('hidden');
-                    btnHeaderEdit.classList.add('hidden');
-                }
-            }
-
-            btnHeaderEdit.addEventListener('click', () => {
-                navigate('screen-3', 'Editar Rotinas');
-            });
-
-            btnHeaderBack.addEventListener('click', () => {
-                navigate('screen-1', 'Minhas Rotinas');
-            });
-
-            document.querySelectorAll('.routine-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const routineName = card.dataset.routineName || 'Iniciar Treino';
-                    navigate('screen-2', routineName);
-                });
-            });
-
-            document.getElementById('btn-finish').addEventListener('click', () => {
-                console.log('Treino finalizado, salvando dados...');
-                navigate('screen-1', 'Minhas Rotinas');
-            });
-
-            document.getElementById('btn-add-routine').addEventListener('click', () => {
-                console.log('Adicionar nova rotina...');
-            });
-
-            navigate('screen-1', 'Minhas Rotinas');
-        });
-    </script>
-</body>
+    <main id="app-container" class="flex-1 overflow-y-auto"></main>
+  </body>
 </html>
-

@@ -1,10 +1,11 @@
 import HTMLService from "./HMTLService.js";
+import GymLogService from "./GymLogService.js"
 
 class App {
   constructor() {
-    new HTMLService();
     this.#registerServiceWorker();
-
+    const gymLogService = new GymLogService();
+    window.HTMLService = new HTMLService(gymLogService);
   }
   #registerServiceWorker() {
     navigator.serviceWorker
