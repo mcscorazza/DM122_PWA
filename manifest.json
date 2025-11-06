@@ -1,8 +1,8 @@
 {
   "name": "PWA - GymLog",
   "short_name": "GymLog",
-  "theme_color": "#3f51b5",
-  "background_color": "#fff",
+  "theme_color": "#282C34",
+  "background_color": "#000000",
   "display": "standalone",
   "scope": ".",
   "start_url": "index.html",
