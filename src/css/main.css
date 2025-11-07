@@ -1,5 +1,9 @@
 .main-container {
-  min-width: 500px;
-  flex: 1;
-  overflow-y: auto;
+  width: 800px;
+}
+
+@media only screen and (max-width: 768px) {
+ .main-container {
+    width: 100%;
+ } 
 }

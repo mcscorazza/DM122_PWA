@@ -6,3 +6,9 @@
 .page.active {
   display: block;
 }
+
+@media only screen and (min-width: 768px) {
+ .page {
+    width: 100%;
+ } 
+}

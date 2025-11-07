@@ -4,6 +4,7 @@ export default class HTMLService {
 
     this.btnBack = document.getElementById('btn-back');
 
+    this.imgLogoApp = document.getElementById('logo-app');
     this.btnEditRoutineList = document.getElementById('btn-routine-list');
     this.btnEditExerciseList = document.getElementById('btn-exercise-list');
 
@@ -39,16 +40,19 @@ export default class HTMLService {
     this.currentPageId = pageId;
 
     if (pageId === 'screen-1') {
+      this.imgLogoApp.classList.remove('hidden');
       this.btnBack.classList.add('hidden');
       this.btnEditRoutineList.classList.remove('hidden');
       this.btnEditExerciseList.classList.add('hidden');
     }
     if (pageId === 'screen-2') {
+      this.imgLogoApp.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
       this.btnEditRoutineList.classList.add('hidden');
       this.btnEditExerciseList.classList.remove('hidden');
     }
     if (pageId === 'screen-3') {
+      this.imgLogoApp.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
       this.btnEditRoutineList.classList.add('hidden');
       this.btnEditExerciseList.classList.add('hidden');
