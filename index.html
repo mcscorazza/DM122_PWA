@@ -7,42 +7,26 @@
   <title>GymLog PWA</title>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script type="module" src="src/modules/app.js"></script>
-
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="icon" href="./src/assets/icons/gym-48x48.png" type="image/png">
   <link rel="manifest" href="manifest.json" />
-
   <link rel="stylesheet" href="./src/css/styles.css">
-
 </head>
 <body>
     <header class="main-header">
-        <img src="./src/assets/icons/gym-48x48.png" alt="">
+        <img src="./src/assets/icons/gym-96x96.png" class="header-img" alt="">
         <button id="btn-header-back" class="header-btn hidden">
             <i data-lucide="chevron-left"></i>
         </button>
         <h1 id="header-title" class="header-title">Minhas Rotinas</h1>
         <button id="btn-header-edit" class="header-btn">
-            <i data-lucide="edit"></i>
+          <i data-lucide="square-pen" class="edit-btn"></i>
         </button>
     </header>
 
   <main id="app-container" class="">
     <div id="screen-1" class="page-padding page-space-y-4">
-      <div id="routine-list-container" class="list-container">
-
-        <div class="routine-card" data-routine-id="1" data-routine-name="Exemplo">
-          <div class="routine-card-content">
-            <img src="./src/assets/supino.png" alt="">
-            <div>
-              <h2 class="routine-card-title">Treino A</h2>
-              <p class="routine-card-subtitle">3 exercícios</p>
-            </div>
-            <i data-lucide="chevron-right" class="routine-card-icon"></i>
-          </div>
-        </div>
-
-      </div>
+      <div id="routine-list" class="list-container"></div>
     </div>
   </main>
 </body>

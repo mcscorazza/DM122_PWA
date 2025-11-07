@@ -54,11 +54,11 @@ export default class GymLogService {
   }
 
   async getAll() {
-    return this.#db.routine.toArray();
+    return this.#db.routines.toArray();
   }
 
   async delete(routineId) {
-    await this.#db.routine.delete(routineId);
+    await this.#db.routines.delete(routineId);
     console.log(`[TodoService.js] Routine with ID ${routineId} has been deleted`);
     return true;
   }

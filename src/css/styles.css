@@ -3,10 +3,13 @@
 
         /* --- 1. Variáveis de Cor e Reset --- */
         :root {
-            --header-bg: #000000;
-            --c-bg-900: #111827;
+            --header-bg: #15171a;
+            --text-card: #ffc621;
+            --text-card-sub: #eeeeee;
+
+            --c-bg-900: #282C34;
             /* bg-gray-900 */
-            --c-bg-800: #1f2937;
+            --c-bg-800: #15171a;
             /* bg-gray-800 */
             --c-bg-700: #374151;
             /* bg-gray-700 */
@@ -68,22 +71,29 @@
             z-index: 10;
         }
 
+        .header-img {
+            width: 55px;
+        }
+
         .header-btn {
+
+            width: 55px;
             background: none;
             border: none;
             color: var(--c-text-white);
             cursor: pointer;
+            .edit-btn {
+                width: 32px;
+                height: 32px;
+                color: var(--text-card);
+            }
         }
 
         .header-title {
             font-size: 1.25rem;
-            /* text-xl */
             font-weight: 600;
-            /* font-semibold */
             text-align: center;
             flex: 1;
-            /* Remove a margem do botão "Voltar" quando ele está escondido */
-            margin-left: 40px;
         }
 
         /* Ajusta a margem do título quando o botão "Voltar" aparece */
@@ -299,43 +309,47 @@
         }
 
         .routine-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background-color: var(--c-bg-800);
             padding: 1.25rem;
-            /* p-5 */
             border-radius: 0.5rem;
-            /* rounded-lg */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             cursor: pointer;
             transition: transform 0.15s ease;
+
+            img {
+                width: 50px;
+            }
         }
 
         .routine-card:hover {
-            transform: scale(1.03);
-            /* hover:scale-105 */
+            transform: scale(1.01);
         }
 
         .routine-card-content {
+            width: 100%;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            margin-left: 16px;
             pointer-events: none;
-            /* Facilita o clique no card */
         }
 
         .routine-card-title {
             font-size: 1.5rem;
-            /* text-2xl */
-            font-weight: 600;
-            /* font-semibold */
-            color: var(--c-text-white);
+            font-weight: 800;
+            color: var(--text-card);
         }
 
         .routine-card-subtitle {
-            color: var(--c-text-400);
+            color: var(--text-card-sub);
         }
 
-        .routine-card-icon {
-            color: var(--c-text-500);
+        .routine-btn {
+            width: 30px;
+            height: 30px;
+            color: var(--text-card);
         }
 
         /* --- 7. Tela 3: Editor --- */
