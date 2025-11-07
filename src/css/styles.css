@@ -49,12 +49,9 @@
             font-family: "Open Sans", sans-serif;
             background-color: var(--c-bg-900);
             color: var(--c-text-white);
-            height: 100dvh;
-            /* Altura total da viewport dinâmica */
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            /* Impede o body de rolar */
         }
 
         /* --- 2. Estrutura Principal --- */

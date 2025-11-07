@@ -4,13 +4,15 @@ export default class HTMLService {
     this.btnHeaderBack = document.getElementById('btn-header-back');
     this.btnHeaderEdit = document.getElementById('btn-header-edit');
     this.pages = document.querySelectorAll('.page');
-
     this.routineListContainer = document.getElementById('routine-list');
 
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
 
     this.getRoutines();
+
+    this.btnHeaderEdit.addEventListener('click', () => { this.addRoutine(); });
+
   }
 
   navigate(pageId, title, routineId = null) {
@@ -49,5 +51,16 @@ export default class HTMLService {
     });
 
     lucide.createIcons();
+  }
+
+  async addRoutine() {
+    const routine = {
+      title: "Treino X",
+      description: "TESTE",
+      icon: "supino.png"
+    };
+    await this.gymLogService.save(routine)
+    
+    this.getRoutines();
   }
 }
