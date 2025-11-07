@@ -1,0 +1,43 @@
+.exercise-list-container>*+* {
+  margin-top: 1rem;
+}
+
+.exercise-card {
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--cards-bg);
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+
+
+.exercise-card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 16px;
+  pointer-events: none;
+}
+
+.exercise-card-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--secondary-color);
+}
+
+.exercise-card-subtitle {
+  font-size: 0.8em;
+  color: var(--primary-color);
+}
+
+.exercise-btn {
+  width: 30px;
+  height: 30px;
+  color: var(--secondary-color);
+}

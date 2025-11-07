@@ -19,7 +19,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  console.log(`🚩 [sw.js] request: ${request.url}`);
+  // console.log(`🚩 [sw.js] request: ${request.url}`);
   event.respondWith(proxy(request));
 });
 
@@ -41,7 +41,7 @@ async function cacheCleanup() {
 }
 
 async function proxy(request) {
-  console.log(`🚩 [sw.js] proxying...`);
+  // console.log(`🚩 [sw.js] proxying...`);
   const url = new URL(request.url);
   return networkFirst(request);
 }

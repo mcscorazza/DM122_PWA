@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GymLog PWA</title>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script type="module" src="src/modules/app.js"></script>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="icon" href="./src/assets/icons/gym-48x48.png" type="image/png">
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./src/css/styles.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GymLog PWA</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="src/modules/app.js"></script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="./src/assets/icons/gym-48x48.png" type="image/png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="./src/css/styles.css" />
+  </head>
+  <body>
     <header class="main-header">
-        <img src="./src/assets/icons/gym-96x96.png" class="header-img" alt="">
-        <button id="btn-header-back" class="header-btn hidden">
-            <i data-lucide="chevron-left"></i>
-        </button>
-        <h1 id="header-title" class="header-title">Minhas Rotinas</h1>
-        <button id="btn-header-edit" class="header-btn">
-          <i data-lucide="square-pen" class="edit-btn"></i>
-        </button>
+      <img src="./src/assets/icons/gym-96x96.png" class="header-img" alt="" />
+
+      <button id="btn-back" class="header-btn hidden">
+        <i data-lucide="chevron-left" class="edit-btn"></i>
+      </button>
+
+      <h1 id="header-title" class="header-title">Minhas Rotinas</h1>
+      <button id="btn-routine-list" class="header-btn">
+        <i data-lucide="list-plus" class="edit-btn"></i>
+      </button>
+      <button id="btn-exercise-list" class="header-btn">
+        <i data-lucide="square-pen" class="edit-btn"></i>
+      </button>
     </header>
 
-  <main id="app-container" class="">
-    <div id="screen-1" class="page-padding page-space-y-4">
-      <div id="routine-list" class="list-container"></div>
-    </div>
-  </main>
-</body>
+    <main id="app-container" class="main-container">
+      <div id="screen-1" class="page">
+        <div id="routine-list" class="routine-list-container"></div>
+      </div>
 
+      <div id="screen-2" class="page">
+        <div id="exercise-list" class="exercise-list-container"></div>
+      </div>
+
+      <div id="screen-3" class="page">OK</div>
+    </main>
+  </body>
 </html>

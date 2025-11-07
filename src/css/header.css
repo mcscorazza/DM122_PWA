@@ -1,0 +1,41 @@
+.main-header {
+  background-color: var(--header-bg);
+  padding: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+}
+
+.header-img {
+  width: 60px;
+}
+
+.header-btn {
+  width: 55px;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+
+  .edit-btn {
+    width: 32px;
+    height: 32px;
+    color: var(--secondary-color);
+  }
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
+}
+
+.header-btn:not(.hidden)+.header-title {
+  margin-left: 0;
+}
