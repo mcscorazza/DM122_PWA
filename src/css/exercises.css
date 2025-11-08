@@ -2,12 +2,22 @@
   margin-top: 1rem;
 }
 
+.exercise-detail-title {
+  color: var(--secondary-color);
+  width: 100%;
+  font-size: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--secondary-color);
+  margin-bottom: 32px;
+  text-align: center;
+}
+
 .exercise-card {
   max-width: 800px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--cards-bg);
+  background-color: var(--card-bg);
   padding: 1.25rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -25,7 +35,7 @@
 
 .exercise-card-title {
   font-size: 1.2rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--secondary-color);
 }
 
@@ -41,7 +51,7 @@
 }
 
 .exercise-card.done {
-  background-color: #f0fdf4;
+  background-color: var(--card-bg-done);
   opacity: 0.8;
 }
 
@@ -56,7 +66,7 @@
 }
 
 .exercise-card.done .exercise-check-icon {
-  color: #22c55e;
+  color: var(--card-border-done);
 }
 
 .set-card {
@@ -64,45 +74,85 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  background-color: var(--cards-bg);
-  border: 1px solid #535d72;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   margin-bottom: 12px;
+
+  .set-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .set-number {
+      font-weight: 600;
+      font-size: 2em;
+      padding-left: 8px;
+    }
+
+    .set-reps,
+    .set-weight {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      height: 2.5rem;
+      width: 4rem;
+      border-radius: 4px;
+      border: 1px solid var(--card-border);
+      background-color: var(--card-bg-inputs);
+      color: #ccc;
+      margin-left: 16px;
+      margin-right: 8px;
+    }
+
+  }
+
+  .btn-check-set {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #999;
+  }
 }
 
 .set-card.done {
-  background-color: #052c11;
-  border-color: #18ec62;
+  background-color: var(--card-bg-done);
+  border-color: var(--card-border-done);
+
+  .set-info {
+    .set-number {
+      color: #333;
+      text-decoration: line-through;
+    }
+
+    .set-reps,
+    .set-weight {
+      color: #333;
+      border-color: var(--card-border-done);
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .btn-check-set {
+    color: var(--card-border-done);
+  }
 }
 
-.set-info {
-  display: flex;
-  flex-direction: column;
+
+
+.exercise-group-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin-bottom: -10px;
+  margin-top: 24px;
 }
 
-.set-number {
-  font-weight: 600;
-  font-size: 1.1em;
-}
-
-.set-details {
-  color: #666;
-  font-size: 0.9em;
-}
-
-.set-card.done .set-details {
-  color: #555;
-  text-decoration: line-through;
-}
-
-.btn-check-set {
-  background: none;
+.exercise-group-divider {
   border: none;
-  cursor: pointer;
-  padding: 4px;
-  color: #999;
-}
-
-.set-card.done .btn-check-set {
-  color: #07f05c;
+  border-top: 1px solid var(--secondary-color);
+  margin-bottom: 16px;
 }

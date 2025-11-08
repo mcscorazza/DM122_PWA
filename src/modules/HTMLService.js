@@ -31,10 +31,13 @@ export default class HTMLService {
       await this.gymLogService.resetWorkoutState();
       this.navigate('screen-1', 'Minhas Rotinas');
     });
-    this.btnEditRoutineList.addEventListener('click', () => { console.log("Editar lista de Rotinas") });
+
+    this.btnEditRoutineList.addEventListener('click', () => {
+      console.log("Editar lista de Rotinas")
+    });
   }
 
-  navigate(pageId, title, contextId = null) {
+  navigate(pageId, title) {
     this.pages.forEach(page => page.classList.remove('active'));
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
@@ -66,7 +69,6 @@ export default class HTMLService {
 
   async #renderRoutines() {
     const routines = await this.gymLogService.getAllRoutines();
-    console.log(routines);
     this.routineListContainer.innerHTML = '';
 
     routines.forEach(routine => {
@@ -97,7 +99,7 @@ export default class HTMLService {
 
   async #loadExercises(routineId) {
     const exercisesFromDB = await this.gymLogService.getExercicesByRoutineId(routineId);
-    console.table(exercisesFromDB);
+
     this.currentExercisePlan = exercisesFromDB.map(exercise => {
       return {
         ...exercise
@@ -108,44 +110,57 @@ export default class HTMLService {
 
   #drawExerciseList() {
     this.exerciseListContainer.innerHTML = '';
-    if (this.currentExercisePlan.length === 0) {
+
+    if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
       this.exerciseListContainer.innerHTML = '<p class="empty-list-message">Nenhum exercício cadastrado.</p>';
       return;
     }
+
+    const groupedExercises = new Map();
+
     this.currentExercisePlan.forEach(exercise => {
-      const exerciseCard = document.createElement('div');
-      const iconName = exercise.isDone ? 'check-square-2' : 'square';
-      const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
-      const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
-
-      exerciseCard.className = cardClasses;
-      exerciseCard.innerHTML = `
-        <i data-lucide="${iconName}" class="exercise-check-icon"></i>
-        <div class="exercise-card-content">
-        <h3 class="${titleClasses}">${exercise.description}</h3>
-        </div>
-        <i data-lucide="chevron-right" class="exercise-btn"></i>
-        `;
-
-      exerciseCard.addEventListener('click', () => {
-        this.#loadExerciseDetails(exercise.planId);
-        this.navigate('screen-3', exercise.description, exercise.planId);
-      });
-
-      this.exerciseListContainer.appendChild(exerciseCard);
+      const type = exercise.type || 'Outros';
+      if (!groupedExercises.has(type)) {
+        groupedExercises.set(type, []);
+      }
+      groupedExercises.get(type).push(exercise);
     });
 
-    const finishButton = document.createElement('button');
-    finishButton.className = 'btn-finish';
-    finishButton.textContent = 'Finalizar Treino';
-    finishButton.onclick = () => {
-      console.log("Treino finalizado!");
-      this.navigate('screen-1', 'Minhas Rotinas');
-      this.#renderRoutines();
-    };
+    groupedExercises.forEach((exercisesInGroup, type) => {
 
-    this.exerciseListContainer.appendChild(finishButton);
+      const titleEl = document.createElement('h2');
+      titleEl.className = 'exercise-group-title';
+      titleEl.textContent = type;
+      this.exerciseListContainer.appendChild(titleEl);
 
+      const hrEl = document.createElement('hr');
+      hrEl.className = 'exercise-group-divider';
+      this.exerciseListContainer.appendChild(hrEl);
+
+      exercisesInGroup.forEach(exercise => {
+        const exerciseCard = document.createElement('div');
+        const iconName = exercise.isDone ? 'check-square-2' : 'square';
+        const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
+        const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
+
+        exerciseCard.className = cardClasses;
+
+        exerciseCard.innerHTML = `
+          <i data-lucide="${iconName}" class="exercise-check-icon"></i>
+          <div class="exercise-card-content">
+            <h3 class="${titleClasses}">${exercise.description}</h3>
+          </div>
+          <i data-lucide="chevron-right" class="exercise-btn"></i>
+        `;
+
+        exerciseCard.addEventListener('click', () => {
+          this.#loadExerciseDetails(exercise.planId);
+          this.navigate('screen-3', this.currentRoutineContext.title);
+        });
+
+        this.exerciseListContainer.appendChild(exerciseCard);
+      });
+    });
     lucide.createIcons();
   }
 
@@ -163,8 +178,14 @@ export default class HTMLService {
 
   #drawExerciseDetails() {
     if (!this.currentActiveExercise) return;
+
     const { plan, sets } = this.currentActiveExercise;
     this.exerciseDetailsContainer.innerHTML = '';
+
+    const exerciseTitle = document.createElement('h1');
+    exerciseTitle.className = 'exercise-detail-title';
+    exerciseTitle.innerText = plan.description;
+    this.exerciseDetailsContainer.appendChild(exerciseTitle);
 
     sets.forEach(set => {
       const setCard = document.createElement('div');
@@ -172,8 +193,9 @@ export default class HTMLService {
       const iconName = set.isDone ? 'check-circle-2' : 'circle';
       setCard.innerHTML = `
         <div class="set-info">
-        <span class="set-number">Série ${set.setNumber}</span>
-        <span class="set-details">${set.targetReps} reps @ ${set.targetWeight} kg</span>
+          <span class="set-number">${set.setNumber}.</span>
+          <div class="set-reps">${plan.targetReps}</div> reps.
+          <div class="set-weight">${plan.targetWeight}</div>kg
         </div>
         <button class="btn-check-set" data-set-number="${set.setNumber}">
         <i data-lucide="${iconName}"></i>

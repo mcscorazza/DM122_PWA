@@ -13,8 +13,12 @@
   --primary-color: #eeeeee;
   --secondary-color: #ffc621;
   --header-bg: #15171a;
-  --cards-bg: #16191f;
-  --cards-bg-hover: #1f232b;
+  --card-bg: #16191f;
+  --card-bg-inputs: #1f232c;
+  --card-bg-hover: #1f232b;
+  --card-bg-done: #021915;
+  --card-border: #535d72;
+  --card-border-done: #076c5b;
 }
 
 * {

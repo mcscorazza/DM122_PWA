@@ -15,46 +15,59 @@ export default class GymLogService {
 
     db.version(1).stores({
       routines: "++id",
-      exercises: "id, type",
+      exercises: "++id, type",
       routineExercises: "++id, routineId, exerciseId, isDone",
       routineExerciseSets: "++id, planId, isDone"
     });
 
     db.on("populate", async () => {
       await db.routines.bulkPut([
-        { title: "Treino A", description: "Peito/Tríceps", icon: "supino.png" },
+        { title: "Treino A", description: "Peito | Tríceps", icon: "supino.png" },
+        { title: "Treino B", description: "Costas | Bíceps", icon: "biceps.png" },
+        { title: "Treino C", description: "Pernas | Ombro", icon: "leg-press.png" },
       ]);
       await db.exercises.bulkPut([
-        { id: 1, description: "Supino Reto", type: "Peito" },
-        { id: 2, description: "Fly Maquina", type: "Peito" },
+        { description: "Supino Reto", type: "Peito" },
+        { description: "Fly Maquina", type: "Peito" },
+        { description: "Rosca Direta com Barra W", type: "Biceps" },
+        { description: "Rosca Martelo com Halteres", type: "Biceps" },
+        { description: "Levantamento Lateral", type: "Ombro" },
+        { description: "Remada Baixa", type: "Costas" },
+        { description: "Puxador Peito", type: "Costas" },
       ]);
 
-      const planId1 = await db.routineExercises.put({
-        routineId: 1,
-        exerciseId: 1,
-        targetSets: 3,
-        targetReps: 12,
-        targetWeight: 20,
-        isDone: false
-      });
-      const planId2 = await db.routineExercises.put({
-        routineId: 1,
-        exerciseId: 2,
-        targetSets: 3,
-        targetReps: 12,
-        targetWeight: 100,
-        isDone: true
-      });
+      const planId1 = await db.routineExercises.put(
+        { routineId: 1, exerciseId: 1, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
+      );
+      const planId2 = await db.routineExercises.put(
+        { routineId: 1, exerciseId: 2, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
+      );
+      const planId3 = await db.routineExercises.put(
+        { routineId: 1, exerciseId: 3, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
+      );
+      const planId4 = await db.routineExercises.put(
+        { routineId: 1, exerciseId: 4, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
+      );
 
       await db.routineExerciseSets.bulkPut([
         { planId: planId1, setNumber: 1, isDone: false },
-        { planId: planId1, setNumber: 2, isDone: true },
+        { planId: planId1, setNumber: 2, isDone: false },
         { planId: planId1, setNumber: 3, isDone: false },
       ]);
       await db.routineExerciseSets.bulkPut([
-        { planId: planId2, setNumber: 1, isDone: true },
+        { planId: planId2, setNumber: 1, isDone: false },
         { planId: planId2, setNumber: 2, isDone: false },
-        { planId: planId2, setNumber: 3, isDone: true },
+        { planId: planId2, setNumber: 3, isDone: false },
+      ]);
+      await db.routineExerciseSets.bulkPut([
+        { planId: planId3, setNumber: 1, isDone: false },
+        { planId: planId3, setNumber: 2, isDone: false },
+        { planId: planId3, setNumber: 3, isDone: false },
+      ]);
+      await db.routineExerciseSets.bulkPut([
+        { planId: planId4, setNumber: 1, isDone: false },
+        { planId: planId4, setNumber: 2, isDone: false },
+        { planId: planId4, setNumber: 3, isDone: false },
       ]);
     });
     db.open();
