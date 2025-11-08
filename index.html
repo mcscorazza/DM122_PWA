@@ -13,7 +13,12 @@
   </head>
   <body>
     <header class="main-header">
-      <img src="./src/assets/icons/gym-96x96.png" id="logo-app" class="header-img" alt="" />
+      <img
+        src="./src/assets/icons/gym-96x96.png"
+        id="logo-app"
+        class="header-img"
+        alt=""
+      />
 
       <button id="btn-back" class="header-btn hidden">
         <i data-lucide="chevron-left" class="edit-btn"></i>
@@ -29,17 +34,20 @@
     </header>
 
     <main id="app-container" class="main-container">
-      <div id="screen-1" class="page">
-        <div id="routine-list" class="routine-list-container"></div>
-      </div>
+      <div class="main-content-wrapper">
+        <div id="screen-1" class="page">
+          <div id="routine-list" class="routine-list-container"></div>
+        </div>
 
-      <div id="screen-2" class="page">
-        <div id="exercise-list" class="exercise-list-container"></div>
-      </div>
+        <div id="screen-2" class="page">
+          <div id="exercise-list" class="exercise-list-container"></div>
+        </div>
 
-      <div id="screen-3" class="page">
-        <div id="exercise-details" class="exercise-details-container"></div>
+        <div id="screen-3" class="page">
+          <div id="exercise-details" class="exercise-details-container"></div>
+        </div>
       </div>
+      <button id="reset" class="btn-reset">RESET</button>
     </main>
   </body>
 </html>

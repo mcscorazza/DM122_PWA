@@ -12,29 +12,50 @@ export default class GymLogService {
   #initializeDB() {
     console.log(`🚩 [GymLogService.js] initializing DB`);
     const db = new Dexie(DB_KEY);
+
     db.version(1).stores({
       routines: "++id",
       exercises: "id, type",
-      routineExercises: "++id, routineId, exerciseId"
+      routineExercises: "++id, routineId, exerciseId, isDone",
+      routineExerciseSets: "++id, planId, isDone"
     });
+
     db.on("populate", async () => {
-      db.routines.bulkPut([
+      await db.routines.bulkPut([
         { title: "Treino A", description: "Peito/Tríceps", icon: "supino.png" },
-        { title: "Treino B", description: "Costas/Bíceps", icon: "biceps.png" },
-        { title: "Treino C", description: "Perna/Ombro", icon: "leg-press.png" },
       ]);
-      db.exercises.bulkPut([
+      await db.exercises.bulkPut([
         { id: 1, description: "Supino Reto", type: "Peito" },
         { id: 2, description: "Fly Maquina", type: "Peito" },
-        { id: 3, description: "Rosca Direta com Barra W", type: "Biceps" },
-        { id: 4, description: "Rosca Martelo com Alteres", type: "Biceps" },
       ]);
-      db.routineExercises.bulkPut([
-        { routineId: 1, exerciseId: 1, targetSets: 3, targetReps: 12, targetWeight: 20 },
-        { routineId: 1, exerciseId: 2, targetSets: 3, targetReps: 12, targetWeight: 40 },
-        { routineId: 1, exerciseId: 3, targetSets: 3, targetReps: 12, targetWeight: 25 },
-        { routineId: 1, exerciseId: 4, targetSets: 3, targetReps: 12, targetWeight: 8 }
-      ])
+
+      const planId1 = await db.routineExercises.put({
+        routineId: 1,
+        exerciseId: 1,
+        targetSets: 3,
+        targetReps: 12,
+        targetWeight: 20,
+        isDone: false
+      });
+      const planId2 = await db.routineExercises.put({
+        routineId: 1,
+        exerciseId: 2,
+        targetSets: 3,
+        targetReps: 12,
+        targetWeight: 100,
+        isDone: true
+      });
+
+      await db.routineExerciseSets.bulkPut([
+        { planId: planId1, setNumber: 1, isDone: false },
+        { planId: planId1, setNumber: 2, isDone: true },
+        { planId: planId1, setNumber: 3, isDone: false },
+      ]);
+      await db.routineExerciseSets.bulkPut([
+        { planId: planId2, setNumber: 1, isDone: true },
+        { planId: planId2, setNumber: 2, isDone: false },
+        { planId: planId2, setNumber: 3, isDone: true },
+      ]);
     });
     db.open();
     this.#db = db;
@@ -71,37 +92,64 @@ export default class GymLogService {
       .where('routineId')
       .equals(routineId)
       .toArray();
-
-    if (plannedItems.length === 0) {
-      return [];
-    }
-
+    if (plannedItems.length === 0) return [];
     const exerciseIds = plannedItems.map(item => item.exerciseId);
-
     const exerciseDetails = await this.#db.exercises
       .where('id')
       .anyOf(exerciseIds)
       .toArray();
-
     const exerciseMap = new Map(exerciseDetails.map(ex => [ex.id, ex]));
 
     const fullExercises = plannedItems.map(plan => {
       const details = exerciseMap.get(plan.exerciseId);
-
       return {
         planId: plan.id,
         routineId: plan.routineId,
         targetSets: plan.targetSets,
         targetReps: plan.targetReps,
         targetWeight: plan.targetWeight,
+        isDone: plan.isDone,
         exerciseId: plan.exerciseId,
         description: details ? details.description : 'Exercício não encontrado',
         type: details ? details.type : 'N/A'
       };
     });
-
     return fullExercises;
   }
 
+  async getSetsForExercise(planId) {
+    return this.#db.routineExerciseSets
+      .where('planId')
+      .equals(planId)
+      .sortBy('setNumber');
+  }
 
+  async updateSetState(setId, isDone) {
+    return this.#db.routineExerciseSets.update(setId, { isDone: isDone });
+  }
+  async updateExerciseState(planId, isDone) {
+    return this.#db.routineExercises.update(planId, { isDone: isDone });
+  }
+
+  async resetWorkoutState() {
+    console.log(`🚩 Resetando estado de TODOS os treinos...`);
+    try {
+      await this.#db.routineExercises.toCollection().modify(exercise => {
+        if (exercise.isDone === true) {
+          exercise.isDone = false;
+        }
+      });
+
+      await this.#db.routineExerciseSets.toCollection().modify(set => {
+        if (set.isDone === true) {
+          set.isDone = false;
+        }
+      });
+
+      console.log(`🚩 Todos os estados foram resetados.`);
+
+    } catch (error) {
+      console.error("Falha no reset geral do DB:", error);
+    }
+  }
 }

@@ -46,13 +46,27 @@
   border-radius: 8px;
   background-color: var(--secondary-color);
   color: var(--background);
-  padding: 8px;
+  padding: 16px;
   font-size: 1.2em;
   font-weight: 700;
   cursor: pointer;
   outline: none;
   border: none;
 }
+
+.btn-reset {
+  width: 200px;
+  border-radius: 8px;
+  background-color: red;
+  color: var(--background);
+  padding: 16px;
+  font-size: 1.2em;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
 
 /* ----- ICONS ----- */
 .icon {

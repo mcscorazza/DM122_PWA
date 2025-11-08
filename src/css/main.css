@@ -1,9 +1,41 @@
 .main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.main-content-wrapper {
   width: 800px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.btn-reset {
+  padding: 12px;
+  margin: 20px;
+  background-color: #713f12;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-reset:hover {
+  background-color: #422006;
 }
 
 @media only screen and (max-width: 768px) {
- .main-container {
+
+  .main-container {
     width: 100%;
- } 
+  }
+
+  .main-content-wrapper {
+    width: 100%;
+    padding: 8px;
+  }
 }
