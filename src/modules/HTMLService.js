@@ -12,7 +12,8 @@ export default class HTMLService {
 
     this.routineListContainer = document.getElementById('routine-list');
     this.exerciseListContainer = document.getElementById('exercise-list');
-
+    this.exerciseDetailsContainer = document.getElementById('exercise-details');
+    
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
 
@@ -20,7 +21,8 @@ export default class HTMLService {
 
     this.currentPageId = 'screen-1';
     this.currentRoutineContext = null;
-
+    this.currentExercisePlan = [];
+    this.currentActiveExercise = null;
 
     this.btnBack.addEventListener('click', () => {
       this.#handleGoBack();
@@ -82,7 +84,7 @@ export default class HTMLService {
         };
 
         this.navigate('screen-2', routine.title, routine.id);
-        this.#renderExercises(routine.id);
+        this.#loadAndRenderExercises(routine.id);
       });
       this.routineListContainer.appendChild(routineCard);
     });
@@ -90,36 +92,146 @@ export default class HTMLService {
     lucide.createIcons();
   }
 
-  async #renderExercises(routineId) {
-    const exercises = await this.gymLogService.getExercicesByRoutineId(routineId);
+  async #loadAndRenderExercises(routineId) {
+    const exercisesFromDB = await this.gymLogService.getExercicesByRoutineId(routineId);
+    this.currentExercisePlan = exercisesFromDB.map(exercise => {
+      return {
+        ...exercise,
+        isDone: false
+      };
+    });
+    this.#drawExerciseList();
+  }
+
+  #drawExerciseList() {
     this.exerciseListContainer.innerHTML = '';
-    if (exercises.length === 0) {
-      this.exerciseListContainer.innerHTML = '<p>Nenhum exercício cadastrado.</p>';
+    if (this.currentExercisePlan.length === 0) {
+      this.exerciseListContainer.innerHTML = '<p class="empty-list-message">Nenhum exercício cadastrado.</p>';
       return;
     }
-    exercises.forEach(exercise => {
+    this.currentExercisePlan.forEach(exercise => {
       const exerciseCard = document.createElement('div');
-      exerciseCard.className = 'exercise-card';
-
+      const iconName = exercise.isDone ? 'check-square-2' : 'square';
+      const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
+      const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
+    
+      exerciseCard.className = cardClasses; 
       exerciseCard.innerHTML = `
-      <div class="exercise-card-content">
-      <h3 class="exercise-card-title">${exercise.description}</h3>
-      <p class="exercise-card-subtitle">
-            Séries: ${exercise.targetSets} | Reps: ${exercise.targetReps} | Peso: ${exercise.targetWeight}kg
-          </p>
-      </div>
-      <i data-lucide="chevron-right" class="exercise-btn"></i>
-      `;
+        <i data-lucide="${iconName}" class="exercise-check-icon"></i>
+        <div class="exercise-card-content">
+        <h3 class="${titleClasses}">${exercise.description}</h3>
+        </div>
+        <i data-lucide="chevron-right" class="exercise-btn"></i>
+        `;
 
       exerciseCard.addEventListener('click', () => {
+        this.#loadExerciseDetails(exercise.planId);
         this.navigate('screen-3', exercise.description, exercise.planId);
       });
-
+      
       this.exerciseListContainer.appendChild(exerciseCard);
     });
 
+    const finishButton = document.createElement('button');
+    finishButton.className = 'btn-finish-workout';
+    finishButton.textContent = 'Finalizar Treino';
+    finishButton.onclick = () => {
+      console.log("Treino finalizado!");
+      this.navigate('screen-1', 'Minhas Rotinas');
+      this.#renderRoutines();
+    };
+  
+    this.exerciseListContainer.appendChild(finishButton);
+
     lucide.createIcons();
   }
+
+  #loadExerciseDetails(planId) {
+    const exercisePlan = this.currentExercisePlan.find(ex => ex.planId === planId);
+    if (!exercisePlan) {
+      console.error("Plano do exercício não encontrado!", planId);
+      return;
+    }
+    
+    const setsList = [];
+    for (let i = 0; i < exercisePlan.targetSets; i++) {
+      setsList.push({
+        setNumber: i + 1,
+        targetReps: exercisePlan.targetReps,
+        targetWeight: exercisePlan.targetWeight,
+        isDone: false // Cada set começa como "não feito"
+      });
+    }
+    this.currentActiveExercise = {
+      plan: exercisePlan,
+      sets: setsList
+    };
+
+    console.table(setsList);
+    this.#drawExerciseDetails();
+  }
+
+  #drawExerciseDetails() {
+    if (!this.currentActiveExercise) return;
+    const { plan, sets } = this.currentActiveExercise;
+    this.exerciseDetailsContainer.innerHTML = '';
+    
+    sets.forEach(set => {
+      const setCard = document.createElement('div');
+      setCard.className = set.isDone ? 'set-card done' : 'set-card';
+      const iconName = set.isDone ? 'check-circle-2' : 'circle';
+      setCard.innerHTML = `
+        <div class="set-info">
+        <span class="set-number">Série ${set.setNumber}</span>
+        <span class="set-details">${set.targetReps} reps @ ${set.targetWeight} kg</span>
+        </div>
+        <button class="btn-check-set" data-set-number="${set.setNumber}">
+        <i data-lucide="${iconName}"></i>
+        </button>
+        `;
+
+
+      setCard.querySelector('.btn-check-set').addEventListener('click', () => {
+        this.#toggleSetDone(set.setNumber);
+      });
+
+      this.exerciseDetailsContainer.appendChild(setCard);
+    });
+
+    const finishButton = document.createElement('button');
+    finishButton.className = 'btn-finish-exercise'; // Para estilizar
+    finishButton.textContent = 'Finalizar Exercício';
+    
+    finishButton.addEventListener('click', () => {
+      const planId = this.currentActiveExercise.plan.planId;
+      this.markExerciseAsDone(planId); 
+    });
+
+    this.exerciseDetailsContainer.appendChild(finishButton);
+    
+    lucide.createIcons();
+  }
+
+  markExerciseAsDone(planId) {
+    const exercise = this.currentExercisePlan.find(ex => ex.planId === planId);
+    if (exercise) {
+      exercise.isDone = true;
+    }
+    
+    this.#handleGoBack();
+  }
+
+  #toggleSetDone(setNumber) {
+    if (!this.currentActiveExercise) return;
+    const set = this.currentActiveExercise.sets.find(s => s.setNumber === setNumber);
+  
+    if (set) {
+      set.isDone = !set.isDone;
+    }
+    console.table(this.currentActiveExercise.sets)
+    this.#drawExerciseDetails();
+  }
+
 
   #handleGoBack() {
     if (this.currentPageId === 'screen-2') {
@@ -129,7 +241,7 @@ export default class HTMLService {
     else if (this.currentPageId === 'screen-3') {
       if (this.currentRoutineContext) {
         this.navigate('screen-2', this.currentRoutineContext.title, this.currentRoutineContext.id);
-        this.#renderExercises(this.currentRoutineContext.id);
+        this.#loadAndRenderExercises(this.currentRoutineContext.id);
       } else {
         console.error("Contexto da rotina perdido. Voltando para o início.");
         this.navigate('screen-1', 'Minhas Rotinas');

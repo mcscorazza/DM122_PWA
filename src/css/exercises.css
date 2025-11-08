@@ -15,8 +15,6 @@
   transition: transform 0.15s ease;
 }
 
-
-
 .exercise-card-content {
   width: 100%;
   display: flex;
@@ -40,4 +38,71 @@
   width: 30px;
   height: 30px;
   color: var(--secondary-color);
+}
+
+.exercise-card.done {
+  background-color: #f0fdf4;
+  opacity: 0.8;
+}
+
+.exercise-card-title.done {
+  text-decoration: line-through;
+  color: #777;
+}
+
+.exercise-check-icon {
+  margin-right: 12px;
+  color: #888;
+}
+
+.exercise-card.done .exercise-check-icon {
+  color: #22c55e;
+}
+
+.set-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--cards-bg);
+  border: 1px solid #535d72;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.set-card.done {
+  background-color: #052c11;
+  border-color: #18ec62;
+}
+
+.set-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.set-number {
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.set-details {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.set-card.done .set-details {
+  color: #555;
+  text-decoration: line-through;
+}
+
+.btn-check-set {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #999;
+}
+
+.set-card.done .btn-check-set {
+  color: #07f05c;
 }
