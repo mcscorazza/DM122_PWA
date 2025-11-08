@@ -11,9 +11,16 @@ export default class HTMLService {
 
     this.pages = document.querySelectorAll('.page');
 
+
     this.routineListContainer = document.getElementById('routine-list');
     this.exerciseListContainer = document.getElementById('exercise-list');
     this.exerciseDetailsContainer = document.getElementById('exercise-details');
+
+
+    this.btnGotoExerciseEditor = document.getElementById('btn-goto-exercise-editor');
+    this.exerciseEditorForm = document.getElementById('exercise-editor-form');
+    this.exerciseEditorList = document.getElementById('exercise-editor-list');
+    this.btnCancelEdit = document.getElementById('btn-cancel-edit');
 
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
@@ -34,6 +41,11 @@ export default class HTMLService {
 
     this.btnEditRoutineList.addEventListener('click', () => {
       console.log("Editar lista de Rotinas")
+    });
+
+    this.btnGotoExerciseEditor.addEventListener('click', () => {
+      this.navigate('screen-4', 'Editor de Exercícios');
+      //this.#loadExerciseEditor();
     });
   }
 

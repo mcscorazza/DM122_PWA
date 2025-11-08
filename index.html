@@ -37,6 +37,10 @@
       <div class="main-content-wrapper">
         <div id="screen-1" class="page">
           <div id="routine-list" class="routine-list-container"></div>
+
+          <button id="btn-goto-exercise-editor" class="btn-secondary">
+            Gerenciar Exercícios
+          </button>
         </div>
 
         <div id="screen-2" class="page">
@@ -45,6 +49,34 @@
 
         <div id="screen-3" class="page">
           <div id="exercise-details" class="exercise-details-container"></div>
+        </div>
+        <div class="page" id="screen-4">
+          <form id="exercise-editor-form" class="exercise-form">
+            <h3>Novo Exercício</h3>
+            <input type="hidden" id="exercise-id" name="id" />
+            <div class="form-group">
+              <label for="exercise-description">Descrição:</label>
+              <input
+                type="text"
+                id="exercise-description"
+                name="description"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="exercise-type">Tipo (Grupo Muscular):</label>
+              <input type="text" id="exercise-type" name="type" required />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Salvar</button>
+              <button type="button" id="btn-cancel-edit" class="btn-secondary">
+                Cancelar
+              </button>
+            </div>
+          </form>
+          <hr />
+          <h2>Exercícios Salvos</h2>
+          <div id="exercise-editor-list"></div>
         </div>
       </div>
       <button id="reset" class="btn-reset">RESET</button>
