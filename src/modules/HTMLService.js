@@ -133,7 +133,7 @@ export default class HTMLService {
     });
 
     const finishButton = document.createElement('button');
-    finishButton.className = 'btn-finish-workout';
+    finishButton.className = 'btn-finish';
     finishButton.textContent = 'Finalizar Treino';
     finishButton.onclick = () => {
       console.log("Treino finalizado!");
@@ -199,7 +199,7 @@ export default class HTMLService {
     });
 
     const finishButton = document.createElement('button');
-    finishButton.className = 'btn-finish-exercise'; // Para estilizar
+    finishButton.className = 'btn-finish';
     finishButton.textContent = 'Finalizar Exercício';
     
     finishButton.addEventListener('click', () => {

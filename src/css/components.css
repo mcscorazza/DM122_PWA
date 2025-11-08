@@ -41,6 +41,18 @@
   padding: 0.5rem;
 }
 
+.btn-finish {
+  width: 100%;
+  border-radius: 8px;
+  background-color: var(--secondary-color);
+  color: var(--background);
+  padding: 8px;
+  font-size: 1.2em;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
 
 /* ----- ICONS ----- */
 .icon {
