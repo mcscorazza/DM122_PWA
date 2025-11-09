@@ -93,6 +93,9 @@ export default class GymLogService {
     return this.#db.routines.toArray();
   }
 
+  async getRoutineById(routineId) {
+    return this.#db.routines.get(routineId);
+  }
 
   async delete(routineId) {
     await this.#db.routines.delete(routineId);
@@ -166,7 +169,69 @@ export default class GymLogService {
     }
   }
 
-  // Exercises
+
+  // ##################################  
+  //      Routines List Management
+  // ##################################  
+  async createNewRoutine(title) {
+    const newRoutine = {
+      title: title,
+      description: "Edite para adicionar uma descrição",
+      icon: "default.png",
+    };
+    try {
+      const newId = await this.#db.routines.put(newRoutine);
+      console.log(`🚩 Nova rotina "${title}" criada com ID ${newId}`);
+      return newId;
+    } catch (error) {
+      console.error("Erro ao criar rotina:", error);
+    }
+  }
+
+  async updateRoutine(routineId, changes) {
+    try {
+      await this.#db.routines.update(routineId, changes);
+      console.log(`🚩 Rotina ${routineId} atualizada.`);
+    } catch (error) {
+      console.error("Erro ao atualizar rotina:", error);
+    }
+  }
+
+  async deleteRoutineAndData(routineId) {
+    try {
+      const plansToDelete = await this.#db.routineExercises
+        .where('routineId')
+        .equals(routineId)
+        .toArray();
+
+      const planIds = plansToDelete.map(plan => plan.id);
+
+      if (planIds.length > 0) {
+        await this.#db.routineExerciseSets
+          .where('planId')
+          .anyOf(planIds)
+          .delete();
+        console.log(`🚩 Sets deletados para a rotina ${routineId}`);
+
+        await this.#db.routineExercises
+          .where('planId')
+          .anyOf(planIds)
+          .delete();
+        console.log(`🚩 Exercícios do plano deletados para a rotina ${routineId}`);
+      }
+
+      await this.#db.routines.delete(routineId);
+      console.log(`🚩 Rotina ${routineId} deletada com sucesso.`);
+
+    } catch (error) {
+      console.error("Erro ao deletar rotina em cascata:", error);
+    }
+  }
+
+  // ##################################
+  //      Exercise List Management
+  // ##################################
+
   async getAllExercises() {
     return this.#db.exercises.toArray();
   }

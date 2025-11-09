@@ -6,7 +6,7 @@ export default class HTMLService {
     this.btnReset = document.getElementById('reset');
 
     this.imgLogoApp = document.getElementById('logo-app');
-    this.btnEditRoutineList = document.getElementById('btn-routine-list');
+    this.btnEditRoutineList = document.getElementById('btn-new-routine');
     this.btnEditExerciseList = document.getElementById('btn-exercise-list');
 
     this.pages = document.querySelectorAll('.page');
@@ -40,10 +40,6 @@ export default class HTMLService {
     this.btnReset.addEventListener('click', async () => {
       await this.gymLogService.resetWorkoutState();
       this.navigate('screen-1', 'Minhas Rotinas');
-    });
-
-    this.btnEditRoutineList.addEventListener('click', () => {
-      console.log("Editar lista de Rotinas")
     });
 
     this.btnGotoExerciseEditor.addEventListener('click', () => {
@@ -85,7 +81,7 @@ export default class HTMLService {
       this.btnEditRoutineList.classList.add('hidden');
       this.btnEditExerciseList.classList.remove('hidden');
     }
-    if (pageId === 'screen-3') {
+    if (pageId === 'screen-3' || pageId === 'screen-4') {
       this.imgLogoApp.classList.add('hidden');
       this.footerButtons.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
@@ -93,6 +89,10 @@ export default class HTMLService {
       this.btnEditExerciseList.classList.add('hidden');
     }
   }
+
+  // ##################################
+  //     Routines Load and Draw
+  // ##################################
 
   async #renderRoutines() {
     const routines = await this.gymLogService.getAllRoutines();
@@ -102,27 +102,77 @@ export default class HTMLService {
       const routineCard = document.createElement('div');
       routineCard.className = 'routine-card';
       routineCard.innerHTML = `
-        <img src="./src/assets/${routine.icon}" alt="${routine.title}">
-        <div class="routine-card-content">
-          <h3 class="routine-card-title">${routine.title}</h3>
-          <p class="routine-card-subtitle">${routine.description}</p>
+        <div class="routine-card-main-content">
+          <img src="./src/assets/${routine.icon}" alt="${routine.title}">
+          <div class="routine-card-content">
+            <h3 class="routine-card-title">${routine.title}</h3>
+            <p class="routine-card-subtitle">${routine.description}</p>
+          </div>
+          <i data-lucide="chevron-right" class="routine-btn"></i>
         </div>
-        <i data-lucide="chevron-right" class="routine-btn"></i>
-      `;
-      routineCard.addEventListener('click', async () => {
-        this.currentRoutineContext = {
-          id: routine.id,
-          title: routine.title
-        };
-
+        `;
+      routineCard.querySelector('.routine-card-main-content').addEventListener('click', () => {
+        this.currentRoutineContext = { id: routine.id, title: routine.title };
         this.navigate('screen-2', routine.title, routine.id);
         this.#loadExercises(routine.id);
       });
       this.routineListContainer.appendChild(routineCard);
     });
 
+    const newRoutineButton = document.getElementById('btn-new-routine');
+
+    newRoutineButton.addEventListener('click', () => {
+      this.#handleCreateRoutine();
+    });
+
     lucide.createIcons();
   }
+
+  async #handleCreateRoutine() {
+    const title = "Treino Novo"
+    if (title) {
+      await this.gymLogService.createNewRoutine(title);
+      this.#renderRoutines();
+    }
+  }
+
+
+  async #handleEditRoutine(routineId) {
+    const routine = await this.gymLogService.getRoutineById(routineId);
+    if (!routine) {
+      alert("Erro: Rotina não encontrada.");
+      return;
+    }
+    const newTitle = prompt("Editar Título:", routine.title);
+    if (newTitle === null) return;
+
+    const newDescription = prompt("Editar Descrição:", routine.description);
+    if (newDescription === null) return;
+
+    const changes = {
+      title: newTitle,
+      description: newDescription
+    };
+
+    await this.gymLogService.updateRoutine(routineId, changes);
+    this.headerTitle.textContent = newTitle;
+    this.currentRoutineContext.title = newTitle;
+
+    alert("Rotina atualizada!");
+  }
+
+  async #handleDeleteRoutine(routineId, routineTitle) {
+    const confirmation = confirm(`Tem certeza que deseja excluir a rotina "${routineTitle}"?\n\nTODOS os dados desta rotina serão perdidos.`);
+    if (confirmation) {
+      await this.gymLogService.deleteRoutineAndData(routineId);
+      alert(`Rotina "${routineTitle}" deletada com sucesso.`);
+      this.navigate('screen-1', 'Minhas Rotinas');
+      this.#renderRoutines();
+    }
+  }
+  // ##################################
+  //     Exercises Load and Draw
+  // ##################################
 
   async #loadExercises(routineId) {
     const exercisesFromDB = await this.gymLogService.getExercicesByRoutineId(routineId);
@@ -190,6 +240,10 @@ export default class HTMLService {
     });
     lucide.createIcons();
   }
+
+  // ##################################
+  //     Exercises Details Mngmt
+  // ##################################
 
   async #loadExerciseDetails(planId) {
     const plan = this.currentExercisePlan.find(ex => ex.planId === planId);
@@ -276,7 +330,10 @@ export default class HTMLService {
     }
   }
 
-  // Exercise List
+  // ##################################
+  //     Exercise List Manager
+  // ##################################
+
   async #loadExerciseEditor() {
     const exercises = await this.gymLogService.getAllExercises();
     this.exerciseEditorList.innerHTML = '';
@@ -295,8 +352,12 @@ export default class HTMLService {
         <span>(Tipo: ${ex.type} | ID: ${ex.id})</span>
       </div>
       <div class="item-actions">
-        <button class="btn-edit" data-id="${ex.id}">Editar</button>
-        <button class="btn-delete" data-id="${ex.id}">Excluir</button>
+        <button class="btn-edit" data-id="${ex.id}">
+          <i data-lucide="square-pen" class="btn-edit-exercise"></i>
+        </button>
+        <button class="btn-delete" data-id="${ex.id}">
+          <i data-lucide="trash" class="btn-delete-exercise"></i>
+        </button>
       </div>
     `;
 
@@ -314,6 +375,8 @@ export default class HTMLService {
       });
 
       this.exerciseEditorList.appendChild(item);
+
+      lucide.createIcons();
     });
   }
 
@@ -351,7 +414,7 @@ export default class HTMLService {
   }
 
   #handleGoBack() {
-    if (this.currentPageId === 'screen-2') {
+    if (this.currentPageId === 'screen-2' || this.currentPageId === 'screen-4') {
       this.navigate('screen-1', 'Minhas Rotinas');
       this.#renderRoutines();
     }
