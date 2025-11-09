@@ -13,19 +13,11 @@
   padding: 20px;
 }
 
-.btn-reset {
-  padding: 12px;
-  margin: 20px;
-  background-color: #713f12;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.btn-reset:hover {
-  background-color: #422006;
+.footer-buttons {
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  margin: 16px;
 }
 
 @media only screen and (max-width: 768px) {

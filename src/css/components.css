@@ -9,39 +9,7 @@
   color-scheme: dark;
 }
 
-/* ----- BUTTONS ----- */
 .btn {
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-primary {
-  background-color: var(--cards-bg);
-  color: var(--primary-color);
-}
-
-.btn-primary:hover {
-  background-color: var(--cards-bg-hover);
-}
-
-.btn-secondary {
-  background-color: var(--c-bg-700);
-  color: var(--c-blue-300);
-  font-weight: 500;
-  font-size: 0.875rem;
-  padding: 0.5rem;
-}
-
-.btn-finish {
   width: 100%;
   border-radius: 8px;
   background-color: var(--secondary-color);
@@ -55,18 +23,27 @@
   margin-top: 32px;
 }
 
+
+
 .btn-reset {
-  width: 200px;
-  border-radius: 8px;
-  background-color: red;
-  color: var(--background);
-  padding: 16px;
-  font-size: 1.2em;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  border: none;
+  background-color: brown;
+
+  &:hover {
+    background-color: rgb(126, 31, 31);
+  }
 }
+
+
+.btn-exercise {
+  background-color: cornflowerblue;
+
+  &:hover {
+    background-color: rgb(42, 72, 129);
+  }
+}
+
+
+
 
 
 /* ----- ICONS ----- */

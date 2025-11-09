@@ -165,4 +165,27 @@ export default class GymLogService {
       console.error("Falha no reset geral do DB:", error);
     }
   }
+
+  // Exercises
+  async getAllExercises() {
+    return this.#db.exercises.toArray();
+  }
+  async saveExercise(exercise) {
+    try {
+      const savedId = await this.#db.exercises.put(exercise);
+      console.log(`🚩 Exercício salvo com ID: ${savedId}`);
+      return savedId;
+    } catch (error) {
+      console.error("Erro ao salvar exercício:", error);
+    }
+  }
+  async deleteExercise(exerciseId) {
+    try {
+      await this.#db.exercises.delete(exerciseId);
+      console.log(`🚩 Exercício ${exerciseId} deletado.`);
+    } catch (error) {
+      console.error("Erro ao deletar exercício:", error);
+    }
+  }
+
 }

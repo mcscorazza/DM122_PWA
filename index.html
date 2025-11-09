@@ -37,10 +37,6 @@
       <div class="main-content-wrapper">
         <div id="screen-1" class="page">
           <div id="routine-list" class="routine-list-container"></div>
-
-          <button id="btn-goto-exercise-editor" class="btn-secondary">
-            Gerenciar Exercícios
-          </button>
         </div>
 
         <div id="screen-2" class="page">
@@ -50,6 +46,7 @@
         <div id="screen-3" class="page">
           <div id="exercise-details" class="exercise-details-container"></div>
         </div>
+
         <div class="page" id="screen-4">
           <form id="exercise-editor-form" class="exercise-form">
             <h3>Novo Exercício</h3>
@@ -65,11 +62,18 @@
             </div>
             <div class="form-group">
               <label for="exercise-type">Tipo (Grupo Muscular):</label>
-              <input type="text" id="exercise-type" name="type" required />
+              <select name="type" id="exercise-type">
+                <option value="Peito">Peito</option>
+                <option value="Costas">Costas</option>
+                <option value="Biceps">Biceps</option>
+                <option value="Triceps">Triceps</option>
+                <option value="Perna">Perna</option>
+                <option value="Ombro">Ombro</option>
+              </select>
             </div>
             <div class="form-actions">
-              <button type="submit" class="btn-primary">Salvar</button>
-              <button type="button" id="btn-cancel-edit" class="btn-secondary">
+              <button type="submit" class="btn">Salvar</button>
+              <button type="button" id="btn-cancel-edit" class="btn">
                 Cancelar
               </button>
             </div>
@@ -79,7 +83,13 @@
           <div id="exercise-editor-list"></div>
         </div>
       </div>
-      <button id="reset" class="btn-reset">RESET</button>
+
+      <div id="footer-buttons" class="footer-buttons">
+        <button id="btn-goto-exercise-editor" class="btn btn-exercise">
+          Gerenciar Exercícios
+        </button>
+        <button id="reset" class="btn btn-reset">RESET</button>
+      </div>
     </main>
   </body>
 </html>

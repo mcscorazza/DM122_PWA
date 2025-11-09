@@ -73,7 +73,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  color: #ccc;
+  padding: 8px;
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 8px;
@@ -86,7 +87,7 @@
 
     .set-number {
       font-weight: 600;
-      font-size: 2em;
+      font-size: 1.2em;
       padding-left: 8px;
     }
 
@@ -95,16 +96,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      height: 2.5rem;
-      width: 4rem;
+      height: 2rem;
+      width: 3rem;
       border-radius: 4px;
       border: 1px solid var(--card-border);
       background-color: var(--card-bg-inputs);
-      color: #ccc;
       margin-left: 16px;
-      margin-right: 8px;
+      margin-right: 4px;
     }
 
   }
@@ -121,12 +121,9 @@
 .set-card.done {
   background-color: var(--card-bg-done);
   border-color: var(--card-border-done);
+  color: #333;
 
   .set-info {
-    .set-number {
-      color: #333;
-      text-decoration: line-through;
-    }
 
     .set-reps,
     .set-weight {
@@ -141,8 +138,6 @@
   }
 }
 
-
-
 .exercise-group-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -154,5 +149,137 @@
 .exercise-group-divider {
   border: none;
   border-top: 1px solid var(--secondary-color);
+  margin-bottom: 16px;
+}
+
+/* --- Screen-4: Editor de Exercícios --- */
+
+/* 1. Estilos do Formulário */
+.exercise-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.exercise-form h3 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 0.9em;
+  color: var(--primary-color);
+}
+
+.exercise-form input[type="text"],
+.exercise-form select {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  color: var(--secondary-color);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: var(--card-bg-inputs);
+}
+
+.exercise-form select {
+  height: 40px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+#exercise-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editor-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #00324b;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-info strong {
+  font-weight: 600;
+  color: #ccc;
+}
+
+.item-info span {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit {
+  padding: 6px 10px;
+  font-size: 0.85em;
+  color: var(--primary-color);
+  background-color: #031b5b;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #031f6a;
+  }
+}
+
+
+.btn-delete {
+  padding: 6px 10px;
+  font-size: 0.85em;
+  color: var(--primary-color);
+  background-color: #b91c1c;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #de2c2c;
+  }
+}
+
+
+#screen-4 hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 24px 0;
+}
+
+#screen-4 h2 {
+  font-size: 1.25rem;
   margin-bottom: 16px;
 }

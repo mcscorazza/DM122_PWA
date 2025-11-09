@@ -10,12 +10,15 @@ export default class HTMLService {
     this.btnEditExerciseList = document.getElementById('btn-exercise-list');
 
     this.pages = document.querySelectorAll('.page');
-
+    this.footerButtons = document.getElementById('footer-buttons')
 
     this.routineListContainer = document.getElementById('routine-list');
     this.exerciseListContainer = document.getElementById('exercise-list');
     this.exerciseDetailsContainer = document.getElementById('exercise-details');
 
+    this.exerciseEditorForm = document.getElementById('exercise-editor-form');
+    this.exerciseEditorList = document.getElementById('exercise-editor-list');
+    this.btnCancelEdit = document.getElementById('btn-cancel-edit');
 
     this.btnGotoExerciseEditor = document.getElementById('btn-goto-exercise-editor');
     this.exerciseEditorForm = document.getElementById('exercise-editor-form');
@@ -45,7 +48,16 @@ export default class HTMLService {
 
     this.btnGotoExerciseEditor.addEventListener('click', () => {
       this.navigate('screen-4', 'Editor de Exercícios');
-      //this.#loadExerciseEditor();
+      this.#loadExerciseEditor();
+    });
+
+    this.exerciseEditorForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      this.#handleSaveExercise();
+    });
+
+    this.btnCancelEdit.addEventListener('click', () => {
+      this.#clearExerciseForm();
     });
   }
 
@@ -61,18 +73,21 @@ export default class HTMLService {
 
     if (pageId === 'screen-1') {
       this.imgLogoApp.classList.remove('hidden');
+      this.footerButtons.classList.remove('hidden');
       this.btnBack.classList.add('hidden');
       this.btnEditRoutineList.classList.remove('hidden');
       this.btnEditExerciseList.classList.add('hidden');
     }
     if (pageId === 'screen-2') {
       this.imgLogoApp.classList.add('hidden');
+      this.footerButtons.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
       this.btnEditRoutineList.classList.add('hidden');
       this.btnEditExerciseList.classList.remove('hidden');
     }
     if (pageId === 'screen-3') {
       this.imgLogoApp.classList.add('hidden');
+      this.footerButtons.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
       this.btnEditRoutineList.classList.add('hidden');
       this.btnEditExerciseList.classList.add('hidden');
@@ -223,7 +238,7 @@ export default class HTMLService {
     });
 
     const finishButton = document.createElement('button');
-    finishButton.className = 'btn-finish';
+    finishButton.className = 'btn';
     finishButton.textContent = 'Finalizar Exercício';
 
     finishButton.addEventListener('click', () => {
@@ -259,6 +274,71 @@ export default class HTMLService {
     } catch (error) {
       console.error("Erro ao finalizar o exercício:", error);
     }
+  }
+
+  // Exercise List
+  async #loadExerciseEditor() {
+    const exercises = await this.gymLogService.getAllExercises();
+    this.exerciseEditorList.innerHTML = '';
+
+    if (exercises.length === 0) {
+      this.exerciseEditorList.innerHTML = '<p>Nenhum exercício na biblioteca.</p>';
+      return;
+    }
+
+    exercises.forEach(ex => {
+      const item = document.createElement('div');
+      item.className = 'editor-list-item';
+      item.innerHTML = `
+      <div class="item-info">
+        <strong>${ex.description}</strong>
+        <span>(Tipo: ${ex.type} | ID: ${ex.id})</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn-edit" data-id="${ex.id}">Editar</button>
+        <button class="btn-delete" data-id="${ex.id}">Excluir</button>
+      </div>
+    `;
+
+      item.querySelector('.btn-delete').addEventListener('click', async () => {
+        await this.gymLogService.deleteExercise(ex.id);
+        this.#loadExerciseEditor();
+      });
+
+      item.querySelector('.btn-edit').addEventListener('click', () => {
+        this.exerciseEditorForm.querySelector('h3').textContent = 'Editar Exercício';
+        this.exerciseEditorForm.querySelector('#exercise-id').value = ex.id;
+        this.exerciseEditorForm.querySelector('#exercise-description').value = ex.description;
+        this.exerciseEditorForm.querySelector('#exercise-type').value = ex.type;
+        window.scrollTo(0, 0);
+      });
+
+      this.exerciseEditorList.appendChild(item);
+    });
+  }
+
+  async #handleSaveExercise() {
+    const formData = new FormData(this.exerciseEditorForm);
+    const exercise = {
+      description: formData.get('description'),
+      type: formData.get('type')
+    };
+
+    const id = formData.get('id');
+    if (id) {
+      exercise.id = parseInt(id, 10);
+    }
+
+    await this.gymLogService.saveExercise(exercise);
+
+    this.#clearExerciseForm();
+    this.#loadExerciseEditor();
+  }
+
+  #clearExerciseForm() {
+    this.exerciseEditorForm.querySelector('h3').textContent = 'Novo Exercício';
+    this.exerciseEditorForm.reset();
+    this.exerciseEditorForm.querySelector('#exercise-id').value = '';
   }
 
   markExerciseAsDone(planId) {
