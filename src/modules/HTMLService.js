@@ -27,7 +27,10 @@ export default class HTMLService {
     this.exerciseEditorList = document.getElementById('exercise-editor-list');
     this.btnCancelEdit = document.getElementById('btn-cancel-edit');
 
-
+    // MODAL
+    this.editRoutineModal = document.getElementById('edit-routine-modal');
+    this.editRoutineForm = document.getElementById('edit-routine-form');
+    this.btnCancelEditRoutine = document.getElementById('btn-cancel-edit-routine');
 
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
@@ -62,6 +65,15 @@ export default class HTMLService {
 
     this.btnCancelEdit.addEventListener('click', () => {
       this.#clearExerciseForm();
+    });
+
+    this.editRoutineForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Impede o recarregamento da página
+      this.#handleSubmitEditRoutine(); // Chama nosso novo handler
+    });
+
+    this.btnCancelEditRoutine.addEventListener('click', () => {
+      this.editRoutineModal.close();
     });
   }
 
@@ -142,25 +154,33 @@ export default class HTMLService {
   async #handleEditRoutine(routineId) {
     const routine = await this.gymLogService.getRoutineById(routineId);
     if (!routine) {
-      alert("Erro: Rotina não encontrada.");
+      alert("Erro: Rotina não encontrada."); // (Podemos trocar este alert depois)
       return;
     }
-    const newTitle = prompt("Editar Título:", routine.title);
-    if (newTitle === null) return;
 
-    const newDescription = prompt("Editar Descrição:", routine.description);
-    if (newDescription === null) return;
+    this.editRoutineForm.querySelector('#edit-routine-id').value = routine.id;
+    this.editRoutineForm.querySelector('#edit-routine-title').value = routine.title;
+    this.editRoutineForm.querySelector('#edit-routine-description').value = routine.description;
 
+    this.editRoutineModal.showModal();
+  }
+
+  async #handleSubmitEditRoutine() {
+    const formData = new FormData(this.editRoutineForm);
+    const routineId = parseInt(formData.get('id'), 10);
     const changes = {
-      title: newTitle,
-      description: newDescription
+      title: formData.get('title'),
+      description: formData.get('description')
     };
 
     await this.gymLogService.updateRoutine(routineId, changes);
-    this.headerTitle.textContent = newTitle;
-    this.currentRoutineContext.title = newTitle;
 
-    alert("Rotina atualizada!");
+    this.headerTitle.textContent = changes.title;
+    this.currentRoutineContext.title = changes.title;
+
+    this.editRoutineModal.close();
+
+    alert("Rotina atualizada!"); // (Este podemos manter por enquanto)
   }
 
   async #handleDeleteRoutine(routineId, routineTitle) {
@@ -276,62 +296,6 @@ export default class HTMLService {
     console.log(`Iniciando fluxo para adicionar exercícios à rotina: ${this.currentRoutineContext.id}`);
     alert("Próximo passo: Criar a 'screen-5' para selecionar exercícios da biblioteca!");
   }
-
-  // #drawExerciseList() {
-  //   this.exerciseListContainer.innerHTML = '';
-
-  //   if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
-  //     this.exerciseListContainer.innerHTML = '<p class="empty-list-message">Nenhum exercício cadastrado.</p>';
-  //     return;
-  //   }
-
-  //   const groupedExercises = new Map();
-
-  //   this.currentExercisePlan.forEach(exercise => {
-  //     const type = exercise.type || 'Outros';
-  //     if (!groupedExercises.has(type)) {
-  //       groupedExercises.set(type, []);
-  //     }
-  //     groupedExercises.get(type).push(exercise);
-  //   });
-
-  //   groupedExercises.forEach((exercisesInGroup, type) => {
-
-  //     const titleEl = document.createElement('h2');
-  //     titleEl.className = 'exercise-group-title';
-  //     titleEl.textContent = type;
-  //     this.exerciseListContainer.appendChild(titleEl);
-
-  //     const hrEl = document.createElement('hr');
-  //     hrEl.className = 'exercise-group-divider';
-  //     this.exerciseListContainer.appendChild(hrEl);
-
-  //     exercisesInGroup.forEach(exercise => {
-  //       const exerciseCard = document.createElement('div');
-  //       const iconName = exercise.isDone ? 'check-square-2' : 'square';
-  //       const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
-  //       const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
-
-  //       exerciseCard.className = cardClasses;
-
-  //       exerciseCard.innerHTML = `
-  //         <i data-lucide="${iconName}" class="exercise-check-icon"></i>
-  //         <div class="exercise-card-content">
-  //           <h3 class="${titleClasses}">${exercise.description}</h3>
-  //         </div>
-  //         <i data-lucide="chevron-right" class="exercise-btn"></i>
-  //       `;
-
-  //       exerciseCard.addEventListener('click', () => {
-  //         this.#loadExerciseDetails(exercise.planId);
-  //         this.navigate('screen-3', this.currentRoutineContext.title);
-  //       });
-
-  //       this.exerciseListContainer.appendChild(exerciseCard);
-  //     });
-  //   });
-  //   lucide.createIcons();
-  // }
 
   // ##################################
   //     Exercises Details Mngmt
