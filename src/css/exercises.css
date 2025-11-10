@@ -208,7 +208,11 @@
 }
 
 .exercise-form input[type="text"],
-.exercise-form select {
+.exercise-form select,
+.modal-form input[type="text"],
+.modal-form input[type="number"],
+.modal-form select,
+#exercise-select {
   width: 100%;
   padding: 10px;
   font-size: 1em;
@@ -335,6 +339,8 @@
 }
 
 .modal-form h3 {
+  text-align: center;
+  color: var(--secondary-color);
   margin: 0 0 8px 0;
   font-weight: 600;
 }
@@ -355,4 +361,64 @@
   border-radius: 6px;
   box-sizing: border-box;
   background-color: var(--card-bg-inputs);
+}
+
+.icons-container {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  
+  .icon-box {
+    
+    /* border: 1px solid red; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    background-color: var(--card-bg-inputs);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    span {
+      margin-top: 8px;
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.filter-btn {
+  padding: 6px 12px;
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--card-border);
+  background-color: var(--card-bg-inputs);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filter-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+  background-color: var(--secondary-color);
+  color: var(--card-bg);
+  border-color: var(--primary-color);
+}
+
+.modal-form hr {
+  border: none;
+  border-top: 1px solid var(--secondary-color);
+  margin: 12px 0;
 }

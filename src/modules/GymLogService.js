@@ -228,6 +228,40 @@ export default class GymLogService {
     }
   }
 
+  async addExerciseToRoutinePlan(planDetails) {
+    try {
+      await this.#db.transaction(
+        'rw',
+        this.#db.routineExercises, 
+        this.#db.routineExerciseSets, 
+        async () => {
+        
+        const planData = {
+          routineId: planDetails.routineId,
+          exerciseId: planDetails.exerciseId,
+          targetSets: planDetails.targetSets,
+          targetReps: planDetails.targetReps,
+          targetWeight: planDetails.targetWeight,
+          isDone: false
+        };
+        const newPlanId = await this.#db.routineExercises.put(planData);
+        const setsToCreate = [];
+        for (let i = 0; i < planDetails.targetSets; i++) {
+          setsToCreate.push({
+            planId: newPlanId,
+            setNumber: i + 1,
+            isDone: false
+          });
+        }
+        await this.#db.routineExerciseSets.bulkPut(setsToCreate);
+        console.log(`🚩 Exercício ${planDetails.exerciseId} adicionado ao plano ${newPlanId} com ${setsToCreate.length} sets.`);
+      });
+
+    } catch (error) {
+      console.error("Erro ao adicionar exercício ao plano:", error);
+    }
+  }
+
   // ##################################
   //      Exercise List Management
   // ##################################

@@ -33,7 +33,15 @@ export default class HTMLService {
     this.btnCancelEditRoutine = document.getElementById('btn-cancel-edit-routine');
 
     this.editIconModal = document.getElementById('edit-icon-modal');
-    this.iconModalSelect = document.querySelectorAll('icon-container');
+    this.routineIdForIconEdit = null;
+
+    // MODAL Add Exercises
+    this.addExerciseDetailsModal = document.getElementById('add-exercise-details-modal');
+    this.addExerciseDetailsForm = document.getElementById('add-exercise-details-form');
+    this.btnCancelAddExercise = document.getElementById('btn-cancel-add-exercise');
+    this.exerciseFilterButtons = document.getElementById('exercise-filter-buttons');
+    this.exerciseSelect = document.getElementById('exercise-select');
+    this.exerciseLibraryCache = [];
 
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
@@ -79,21 +87,42 @@ export default class HTMLService {
       this.editRoutineModal.close();
     });
 
-    // this.iconModalSelect.addEventListener('click', (e) => {
-    //   this.#updateIcon(this.currentRoutineContext.id, e.currentTarget.dataset.src);
-    // })
-    console.log(this.iconModalSelect)
+    this.editIconModal.addEventListener('click', (event) => {
+      const clickedContainer = event.target.closest('.icon-box');
+      if (!clickedContainer) return;
+      const newIconSrc = clickedContainer.dataset.src;
+      this.#handleSubmitEditIcon(newIconSrc);
+      this.#drawExerciseList();
+    });
+
+    this.addExerciseDetailsForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      this.#handleSubmitAddExercise();
+    });
+
+    this.btnCancelAddExercise.addEventListener('click', () => {
+      this.addExerciseDetailsModal.close();
+    });
+
+    this.exerciseFilterButtons.addEventListener('click', (event) => {
+      if (event.target.tagName !== 'BUTTON') return; 
+      this.#handleFilterClick(event);
+    });
   }
 
-  // async #updateIcon(routineId, iconName) {
-  //   const changes = {
-  //     title: this.currentRoutineContext.title,
-  //     description: this.currentRoutineContext.description,
-  //     icon: iconName
-  //   };
-  //   await this.gymLogService.updateRoutine(routineId, changes);
-  //   this.#loadExercises()
-  // }
+
+
+  async #handleSubmitEditIcon(iconSrc) {
+    if (!this.routineIdForIconEdit) {
+      console.error("Erro: ID da rotina não definido para edição de ícone.");
+      return;
+    }
+    const changes = { icon: iconSrc };
+    await this.gymLogService.updateRoutine(this.routineIdForIconEdit, changes);
+    this.editIconModal.close();
+    this.routineIdForIconEdit = null;
+    document.getElementById('icon-routine').src = `./src/assets/${iconSrc}`
+  }
 
   // ##################################
   //     Navigation Handler
@@ -246,6 +275,7 @@ export default class HTMLService {
       <h1>${this.currentRoutineContext.description}</h1>
       `;
     routineDecription.querySelector('#icon-routine').addEventListener('click', () => {
+      this.routineIdForIconEdit = this.currentRoutineContext.id;
       this.editIconModal.showModal();
     })
 
@@ -314,7 +344,7 @@ export default class HTMLService {
 
 
     this.exerciseListContainer.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
-      this.#navigateToAddExercise();
+      this.#openAddExerciseModal();
     });
 
     const routineActionsDiv = document.createElement('div');
@@ -340,9 +370,69 @@ export default class HTMLService {
     lucide.createIcons();
   }
 
-  #navigateToAddExercise() {
-    console.log(`Iniciando fluxo para adicionar exercícios à rotina: ${this.currentRoutineContext.id}`);
-    alert("Próximo passo: Criar a 'screen-5' para selecionar exercícios da biblioteca!");
+  async #openAddExerciseModal() {
+    this.exerciseLibraryCache = await this.gymLogService.getAllExercises();
+    this.#populateExerciseSelect('all'); 
+    this.#updateFilterButtons('all');
+    this.addExerciseDetailsForm.querySelector('#add-exercise-routine-id').value = this.currentRoutineContext.id;
+    this.addExerciseDetailsModal.showModal();
+  }
+
+  #handleFilterClick(event) {
+    const filterType = event.target.dataset.type;
+    this.#updateFilterButtons(filterType);
+    this.#populateExerciseSelect(filterType);
+  }
+
+  #populateExerciseSelect(filterType) {
+    this.exerciseSelect.innerHTML = ''; 
+    const filteredList = this.exerciseLibraryCache.filter(ex => {
+      return filterType === 'all' || ex.type === filterType;
+    });
+
+    if (filteredList.length === 0) {
+      this.exerciseSelect.innerHTML = '<option value="">Nenhum exercício encontrado</option>';
+      return;
+    }
+    filteredList.forEach(ex => {
+      const option = document.createElement('option');
+      option.value = ex.id;
+      option.textContent = ex.description;
+      this.exerciseSelect.appendChild(option);
+    });
+  }
+
+  #updateFilterButtons(activeType) {
+    const buttons = this.exerciseFilterButtons.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+      if (btn.dataset.type === activeType) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  async #handleSubmitAddExercise() {
+    const formData = new FormData(this.addExerciseDetailsForm);
+    const selectedExerciseId = parseInt(this.exerciseSelect.value, 10);
+    if (!selectedExerciseId) {
+      alert("Por favor, selecione um exercício.");
+      return;
+    }
+
+    const planDetails = {
+      routineId: parseInt(formData.get('routineId'), 10),
+      exerciseId: selectedExerciseId,
+      targetSets: parseInt(formData.get('targetSets'), 10),
+      targetReps: formData.get('targetReps'),
+      targetWeight: parseFloat(formData.get('targetWeight'))
+    };
+
+    await this.gymLogService.addExerciseToRoutinePlan(planDetails);
+    this.addExerciseDetailsModal.close();
+    this.navigate('screen-2', this.currentRoutineContext.title);
+    this.#loadExercises(this.currentRoutineContext.id);
   }
 
   // ##################################
