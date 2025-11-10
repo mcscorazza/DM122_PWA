@@ -136,7 +136,12 @@ export default class HTMLService {
         </div>
         `;
       routineCard.querySelector('.routine-card-main-content').addEventListener('click', () => {
-        this.currentRoutineContext = { id: routine.id, title: routine.title, description: routine.description };
+        this.currentRoutineContext = {
+          id: routine.id,
+          title: routine.title,
+          description: routine.description,
+          icon: routine.icon
+        };
         this.navigate('screen-2', routine.title, routine.id);
         this.#loadExercises(routine.id);
       });
@@ -184,7 +189,6 @@ export default class HTMLService {
 
     this.editRoutineModal.close();
 
-    // alert("Rotina atualizada!");
     this.#drawExerciseList();
 
   }
@@ -218,7 +222,10 @@ export default class HTMLService {
     this.exerciseListContainer.innerHTML = '';
     const routineDecription = document.createElement('div');
     routineDecription.className = 'routine-description';
-    routineDecription.innerHTML = `<h1>${this.currentRoutineContext.description}</h1>`;
+    routineDecription.innerHTML = `
+      <img src="./src/assets/${this.currentRoutineContext.icon}" alt="${this.currentRoutineContext.title}">
+      <h1>${this.currentRoutineContext.description}</h1>
+      `;
     this.exerciseListContainer.appendChild(routineDecription);
 
     if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {

@@ -3,13 +3,24 @@
 }
 
 .routine-description {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 0.8rem;
   color: var(--secondary-color);
   width: 100%;
-  text-align: center;
   /* background-color: var(--card-bg); */
   padding: 8px;
   border-radius: 8px;
+
+  h1 {
+    width: 100%;
+    margin-left: 16px;
+  }
+
+  img {
+    padding: 16px;
+  }
 }
 
 .exercise-detail-title {
