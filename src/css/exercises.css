@@ -2,6 +2,16 @@
   margin-top: 1rem;
 }
 
+.routine-description {
+  font-size: 0.8rem;
+  color: var(--secondary-color);
+  width: 100%;
+  text-align: center;
+  /* background-color: var(--card-bg); */
+  padding: 8px;
+  border-radius: 8px;
+}
+
 .exercise-detail-title {
   color: var(--secondary-color);
   width: 100%;
@@ -20,9 +30,14 @@
   background-color: var(--card-bg);
   padding: 1.25rem;
   border-radius: 0.5rem;
+  border-bottom: 1px solid var(--secondary-color);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: transform 0.15s ease;
+
+  &:hover {
+    background-color: var(--card-bg-inputs);
+  }
 }
 
 .exercise-card-content {
@@ -152,9 +167,6 @@
   margin-bottom: 16px;
 }
 
-/* --- Screen-4: Editor de Exercícios --- */
-
-/* 1. Estilos do Formulário */
 .exercise-form {
   display: flex;
   flex-direction: column;
@@ -288,12 +300,16 @@
 }
 
 .modal {
+  margin: auto;
   border: none;
   border-radius: 8px;
-  padding: 1.5rem; /* 24px */
+  padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 90%;
   max-width: 500px;
+  background-color: var(--card-bg);
+  color: var(--primary-color);
+  /* border: 1px solid red; */
 }
 
 .modal::backdrop {
@@ -314,7 +330,18 @@
 
 .modal-actions {
   display: flex;
-  justify-content: flex-end; /* Alinha botões à direita */
+  justify-content: flex-end;
   gap: 12px;
   margin-top: 16px;
+}
+
+#edit-routine-form input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  color: var(--secondary-color);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: var(--card-bg-inputs);
 }

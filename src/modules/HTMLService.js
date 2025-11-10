@@ -68,14 +68,18 @@ export default class HTMLService {
     });
 
     this.editRoutineForm.addEventListener('submit', (event) => {
-      event.preventDefault(); // Impede o recarregamento da página
-      this.#handleSubmitEditRoutine(); // Chama nosso novo handler
+      event.preventDefault();
+      this.#handleSubmitEditRoutine();
     });
 
     this.btnCancelEditRoutine.addEventListener('click', () => {
       this.editRoutineModal.close();
     });
   }
+
+  // ##################################
+  //     Navigation Handler
+  // ##################################
 
   navigate(pageId, title) {
     this.pages.forEach(page => page.classList.remove('active'));
@@ -132,7 +136,7 @@ export default class HTMLService {
         </div>
         `;
       routineCard.querySelector('.routine-card-main-content').addEventListener('click', () => {
-        this.currentRoutineContext = { id: routine.id, title: routine.title };
+        this.currentRoutineContext = { id: routine.id, title: routine.title, description: routine.description };
         this.navigate('screen-2', routine.title, routine.id);
         this.#loadExercises(routine.id);
       });
@@ -150,11 +154,10 @@ export default class HTMLService {
     }
   }
 
-
   async #handleEditRoutine(routineId) {
     const routine = await this.gymLogService.getRoutineById(routineId);
     if (!routine) {
-      alert("Erro: Rotina não encontrada."); // (Podemos trocar este alert depois)
+      alert("Erro: Rotina não encontrada.");
       return;
     }
 
@@ -177,10 +180,13 @@ export default class HTMLService {
 
     this.headerTitle.textContent = changes.title;
     this.currentRoutineContext.title = changes.title;
+    this.currentRoutineContext.description = changes.description;
 
     this.editRoutineModal.close();
 
-    alert("Rotina atualizada!"); // (Este podemos manter por enquanto)
+    // alert("Rotina atualizada!");
+    this.#drawExerciseList();
+
   }
 
   async #handleDeleteRoutine(routineId, routineTitle) {
@@ -192,6 +198,7 @@ export default class HTMLService {
       this.#renderRoutines();
     }
   }
+
   // ##################################
   //     Exercises Load and Draw
   // ##################################
@@ -206,43 +213,19 @@ export default class HTMLService {
     });
     this.#drawExerciseList();
   }
+
   #drawExerciseList() {
     this.exerciseListContainer.innerHTML = '';
-    const routineActionsDiv = document.createElement('div');
-    routineActionsDiv.className = 'routine-actions-container';
-    routineActionsDiv.innerHTML = `
-    <button class="btn-icon btn-edit-routine" id="btn-edit-current-routine">
-      <i data-lucide="edit-3"></i> Editar Rotina
-    </button>
-    <button class="btn-icon btn-delete-routine" id="btn-delete-current-routine">
-      <i data-lucide="trash-2"></i> Excluir Rotina
-    </button>
-    `;
-
-    routineActionsDiv.querySelector('#btn-edit-current-routine').addEventListener('click', () => {
-      this.#handleEditRoutine(this.currentRoutineContext.id);
-    });
-    routineActionsDiv.querySelector('#btn-delete-current-routine').addEventListener('click', () => {
-      this.#handleDeleteRoutine(this.currentRoutineContext.id, this.currentRoutineContext.title);
-    });
-
-    this.exerciseListContainer.appendChild(routineActionsDiv);
+    const routineDecription = document.createElement('div');
+    routineDecription.className = 'routine-description';
+    routineDecription.innerHTML = `<h1>${this.currentRoutineContext.description}</h1>`;
+    this.exerciseListContainer.appendChild(routineDecription);
 
     if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
       const emptyStateDiv = document.createElement('div');
       emptyStateDiv.className = 'empty-state-container';
-      emptyStateDiv.innerHTML = `
-      <p class="empty-list-message">Nenhum exercício cadastrado nesta rotina.</p>
-      <button class="btn-primary" id="btn-add-exercise-to-routine">
-        <i data-lucide="plus"></i> Adicionar Exercício
-      </button>
-    `;
-
-      emptyStateDiv.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
-        this.#navigateToAddExercise();
-      });
+      emptyStateDiv.innerHTML = `<p class="empty-list-message">Nenhum exercício cadastrado nesta rotina.</p>`;
       this.exerciseListContainer.appendChild(emptyStateDiv);
-
     } else {
       const groupedExercises = new Map();
       this.currentExercisePlan.forEach(exercise => {
@@ -289,6 +272,41 @@ export default class HTMLService {
         });
       });
     }
+
+    const addExercisesDiv = document.createElement('div');
+    addExercisesDiv.className = 'add-new-exercises';
+    addExercisesDiv.innerHTML = `
+      <button class="btn" id="btn-add-exercise-to-routine">
+        <i data-lucide="plus"></i> Adicionar Exercício
+      </button>
+    `;
+    this.exerciseListContainer.appendChild(addExercisesDiv);
+
+
+    this.exerciseListContainer.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
+      this.#navigateToAddExercise();
+    });
+
+    const routineActionsDiv = document.createElement('div');
+    routineActionsDiv.className = 'routine-actions-container';
+    routineActionsDiv.innerHTML = `
+    <button class="btn-icon btn-edit-routine" id="btn-edit-current-routine">
+      <i data-lucide="edit-3"></i> Editar Rotina
+    </button>
+    <button class="btn-icon btn-delete-routine" id="btn-delete-current-routine">
+      <i data-lucide="trash-2"></i> Excluir Rotina
+    </button>
+    `;
+
+    routineActionsDiv.querySelector('#btn-edit-current-routine').addEventListener('click', () => {
+      this.#handleEditRoutine(this.currentRoutineContext.id);
+    });
+    routineActionsDiv.querySelector('#btn-delete-current-routine').addEventListener('click', () => {
+      this.#handleDeleteRoutine(this.currentRoutineContext.id, this.currentRoutineContext.title);
+    });
+
+    this.exerciseListContainer.appendChild(routineActionsDiv);
+
     lucide.createIcons();
   }
 

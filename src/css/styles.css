@@ -11,7 +11,11 @@
 :root {
   --background: #282c34;
   --primary-color: #eeeeee;
+  --danger-color: #b10606;
+  --danger-color-alpha: #b10606cc;
   --secondary-color: #ffc621;
+  --secondary-color-alpha: #ffc621cc;
+
   --header-bg: #15171a;
   --card-bg: #16191f;
   --card-bg-inputs: #1f232c;
@@ -39,6 +43,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* border: 1px solid red; */
 }
 
 .hidden {

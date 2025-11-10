@@ -1,35 +1,31 @@
-/* ----- INPUTS ----- */
-.input-base {
-  padding: 0.75rem;
-  background-color: var(--c-bg-700);
-  border: none;
-  border-radius: 0.375rem;
-  color: var(--primary-color);
-  width: 100%;
-  color-scheme: dark;
-}
-
 .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   width: 100%;
   border-radius: 8px;
   background-color: var(--secondary-color);
   color: var(--background);
-  padding: 16px;
-  font-size: 1.2em;
+  padding: 12px;
+  font-size: 1em;
   font-weight: 700;
   cursor: pointer;
   outline: none;
   border: none;
-  margin-top: 32px;
-}
-
-
-
-.btn-reset {
-  background-color: brown;
+  margin-top: 24px;
 
   &:hover {
-    background-color: rgb(126, 31, 31);
+    background-color: var(--secondary-color-alpha);
+  }
+}
+
+.btn-danger,
+.btn-reset {
+  background-color: var(--danger-color);
+
+  &:hover {
+    background-color: var(--danger-color-alpha);
   }
 }
 
