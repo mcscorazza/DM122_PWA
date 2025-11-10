@@ -16,6 +16,8 @@ export default class HTMLService {
     this.exerciseListContainer = document.getElementById('exercise-list');
     this.exerciseDetailsContainer = document.getElementById('exercise-details');
 
+    this.newRoutineButton = document.getElementById('btn-new-routine');
+
     this.exerciseEditorForm = document.getElementById('exercise-editor-form');
     this.exerciseEditorList = document.getElementById('exercise-editor-list');
     this.btnCancelEdit = document.getElementById('btn-cancel-edit');
@@ -24,6 +26,8 @@ export default class HTMLService {
     this.exerciseEditorForm = document.getElementById('exercise-editor-form');
     this.exerciseEditorList = document.getElementById('exercise-editor-list');
     this.btnCancelEdit = document.getElementById('btn-cancel-edit');
+
+
 
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
@@ -50,6 +54,10 @@ export default class HTMLService {
     this.exerciseEditorForm.addEventListener('submit', (event) => {
       event.preventDefault();
       this.#handleSaveExercise();
+    });
+
+    this.newRoutineButton.addEventListener('click', () => {
+      this.#handleCreateRoutine();
     });
 
     this.btnCancelEdit.addEventListener('click', () => {
@@ -119,12 +127,6 @@ export default class HTMLService {
       this.routineListContainer.appendChild(routineCard);
     });
 
-    const newRoutineButton = document.getElementById('btn-new-routine');
-
-    newRoutineButton.addEventListener('click', () => {
-      this.#handleCreateRoutine();
-    });
-
     lucide.createIcons();
   }
 
@@ -184,45 +186,73 @@ export default class HTMLService {
     });
     this.#drawExerciseList();
   }
-
   #drawExerciseList() {
     this.exerciseListContainer.innerHTML = '';
+    const routineActionsDiv = document.createElement('div');
+    routineActionsDiv.className = 'routine-actions-container';
+    routineActionsDiv.innerHTML = `
+    <button class="btn-icon btn-edit-routine" id="btn-edit-current-routine">
+      <i data-lucide="edit-3"></i> Editar Rotina
+    </button>
+    <button class="btn-icon btn-delete-routine" id="btn-delete-current-routine">
+      <i data-lucide="trash-2"></i> Excluir Rotina
+    </button>
+    `;
 
-    if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
-      this.exerciseListContainer.innerHTML = '<p class="empty-list-message">Nenhum exercício cadastrado.</p>';
-      return;
-    }
-
-    const groupedExercises = new Map();
-
-    this.currentExercisePlan.forEach(exercise => {
-      const type = exercise.type || 'Outros';
-      if (!groupedExercises.has(type)) {
-        groupedExercises.set(type, []);
-      }
-      groupedExercises.get(type).push(exercise);
+    routineActionsDiv.querySelector('#btn-edit-current-routine').addEventListener('click', () => {
+      this.#handleEditRoutine(this.currentRoutineContext.id);
+    });
+    routineActionsDiv.querySelector('#btn-delete-current-routine').addEventListener('click', () => {
+      this.#handleDeleteRoutine(this.currentRoutineContext.id, this.currentRoutineContext.title);
     });
 
-    groupedExercises.forEach((exercisesInGroup, type) => {
+    this.exerciseListContainer.appendChild(routineActionsDiv);
 
-      const titleEl = document.createElement('h2');
-      titleEl.className = 'exercise-group-title';
-      titleEl.textContent = type;
-      this.exerciseListContainer.appendChild(titleEl);
+    if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
+      const emptyStateDiv = document.createElement('div');
+      emptyStateDiv.className = 'empty-state-container';
+      emptyStateDiv.innerHTML = `
+      <p class="empty-list-message">Nenhum exercício cadastrado nesta rotina.</p>
+      <button class="btn-primary" id="btn-add-exercise-to-routine">
+        <i data-lucide="plus"></i> Adicionar Exercício
+      </button>
+    `;
 
-      const hrEl = document.createElement('hr');
-      hrEl.className = 'exercise-group-divider';
-      this.exerciseListContainer.appendChild(hrEl);
+      emptyStateDiv.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
+        this.#navigateToAddExercise();
+      });
+      this.exerciseListContainer.appendChild(emptyStateDiv);
 
-      exercisesInGroup.forEach(exercise => {
-        const exerciseCard = document.createElement('div');
-        const iconName = exercise.isDone ? 'check-square-2' : 'square';
-        const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
-        const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
+    } else {
+      const groupedExercises = new Map();
+      this.currentExercisePlan.forEach(exercise => {
+        const type = exercise.type || 'Outros';
+        if (!groupedExercises.has(type)) {
+          groupedExercises.set(type, []);
+        }
+        groupedExercises.get(type).push(exercise);
+      });
 
-        exerciseCard.className = cardClasses;
+      groupedExercises.forEach((exercisesInGroup, type) => {
 
-        exerciseCard.innerHTML = `
+        const titleEl = document.createElement('h2');
+        titleEl.className = 'exercise-group-title';
+        titleEl.textContent = type;
+        this.exerciseListContainer.appendChild(titleEl);
+
+        const hrEl = document.createElement('hr');
+        hrEl.className = 'exercise-group-divider';
+        this.exerciseListContainer.appendChild(hrEl);
+
+        exercisesInGroup.forEach(exercise => {
+          const exerciseCard = document.createElement('div');
+          const iconName = exercise.isDone ? 'check-square-2' : 'square';
+          const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
+          const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
+
+          exerciseCard.className = cardClasses;
+
+          exerciseCard.innerHTML = `
           <i data-lucide="${iconName}" class="exercise-check-icon"></i>
           <div class="exercise-card-content">
             <h3 class="${titleClasses}">${exercise.description}</h3>
@@ -230,16 +260,78 @@ export default class HTMLService {
           <i data-lucide="chevron-right" class="exercise-btn"></i>
         `;
 
-        exerciseCard.addEventListener('click', () => {
-          this.#loadExerciseDetails(exercise.planId);
-          this.navigate('screen-3', this.currentRoutineContext.title);
-        });
+          exerciseCard.addEventListener('click', () => {
+            this.#loadExerciseDetails(exercise.planId);
+            this.navigate('screen-3', this.currentRoutineContext.title);
+          });
 
-        this.exerciseListContainer.appendChild(exerciseCard);
+          this.exerciseListContainer.appendChild(exerciseCard);
+        });
       });
-    });
+    }
     lucide.createIcons();
   }
+
+  #navigateToAddExercise() {
+    console.log(`Iniciando fluxo para adicionar exercícios à rotina: ${this.currentRoutineContext.id}`);
+    alert("Próximo passo: Criar a 'screen-5' para selecionar exercícios da biblioteca!");
+  }
+
+  // #drawExerciseList() {
+  //   this.exerciseListContainer.innerHTML = '';
+
+  //   if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
+  //     this.exerciseListContainer.innerHTML = '<p class="empty-list-message">Nenhum exercício cadastrado.</p>';
+  //     return;
+  //   }
+
+  //   const groupedExercises = new Map();
+
+  //   this.currentExercisePlan.forEach(exercise => {
+  //     const type = exercise.type || 'Outros';
+  //     if (!groupedExercises.has(type)) {
+  //       groupedExercises.set(type, []);
+  //     }
+  //     groupedExercises.get(type).push(exercise);
+  //   });
+
+  //   groupedExercises.forEach((exercisesInGroup, type) => {
+
+  //     const titleEl = document.createElement('h2');
+  //     titleEl.className = 'exercise-group-title';
+  //     titleEl.textContent = type;
+  //     this.exerciseListContainer.appendChild(titleEl);
+
+  //     const hrEl = document.createElement('hr');
+  //     hrEl.className = 'exercise-group-divider';
+  //     this.exerciseListContainer.appendChild(hrEl);
+
+  //     exercisesInGroup.forEach(exercise => {
+  //       const exerciseCard = document.createElement('div');
+  //       const iconName = exercise.isDone ? 'check-square-2' : 'square';
+  //       const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
+  //       const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
+
+  //       exerciseCard.className = cardClasses;
+
+  //       exerciseCard.innerHTML = `
+  //         <i data-lucide="${iconName}" class="exercise-check-icon"></i>
+  //         <div class="exercise-card-content">
+  //           <h3 class="${titleClasses}">${exercise.description}</h3>
+  //         </div>
+  //         <i data-lucide="chevron-right" class="exercise-btn"></i>
+  //       `;
+
+  //       exerciseCard.addEventListener('click', () => {
+  //         this.#loadExerciseDetails(exercise.planId);
+  //         this.navigate('screen-3', this.currentRoutineContext.title);
+  //       });
+
+  //       this.exerciseListContainer.appendChild(exerciseCard);
+  //     });
+  //   });
+  //   lucide.createIcons();
+  // }
 
   // ##################################
   //     Exercises Details Mngmt
@@ -404,15 +496,6 @@ export default class HTMLService {
     this.exerciseEditorForm.querySelector('#exercise-id').value = '';
   }
 
-  markExerciseAsDone(planId) {
-    const exercise = this.currentExercisePlan.find(ex => ex.planId === planId);
-    if (exercise) {
-      exercise.isDone = true;
-    }
-
-    this.#handleGoBack();
-  }
-
   #handleGoBack() {
     if (this.currentPageId === 'screen-2' || this.currentPageId === 'screen-4') {
       this.navigate('screen-1', 'Minhas Rotinas');
@@ -430,14 +513,4 @@ export default class HTMLService {
     }
   }
 
-  async addRoutine() {
-    const routine = {
-      title: "Treino X",
-      description: "TESTE",
-      icon: "supino.png"
-    };
-    await this.gymLogService.save(routine)
-
-    this.#renderRoutines();
-  }
 }

@@ -58,3 +58,62 @@
   height: 30px;
   color: var(--secondary-color);
 }
+
+.routine-actions-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 24px;
+}
+
+.btn-icon {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.btn-edit-routine {
+  color: #3b82f6;
+  border-color: #dbeafe;
+}
+
+.btn-delete-routine {
+  color: #ef4444;
+  border-color: #fee2e2;
+}
+
+.empty-state-container {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.empty-state-container .empty-list-message {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.empty-state-container .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 1em;
+  background-color: #166534;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
