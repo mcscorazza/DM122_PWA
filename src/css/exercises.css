@@ -9,7 +9,6 @@
   font-size: 0.8rem;
   color: var(--secondary-color);
   width: 100%;
-  /* background-color: var(--card-bg); */
   padding: 8px;
   border-radius: 8px;
 
@@ -20,6 +19,7 @@
 
   img {
     padding: 16px;
+    cursor: pointer;
   }
 }
 

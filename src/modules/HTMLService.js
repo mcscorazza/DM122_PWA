@@ -32,6 +32,9 @@ export default class HTMLService {
     this.editRoutineForm = document.getElementById('edit-routine-form');
     this.btnCancelEditRoutine = document.getElementById('btn-cancel-edit-routine');
 
+    this.editIconModal = document.getElementById('edit-icon-modal');
+    this.iconModalSelect = document.querySelectorAll('icon-container');
+
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
 
@@ -75,7 +78,22 @@ export default class HTMLService {
     this.btnCancelEditRoutine.addEventListener('click', () => {
       this.editRoutineModal.close();
     });
+
+    // this.iconModalSelect.addEventListener('click', (e) => {
+    //   this.#updateIcon(this.currentRoutineContext.id, e.currentTarget.dataset.src);
+    // })
+    console.log(this.iconModalSelect)
   }
+
+  // async #updateIcon(routineId, iconName) {
+  //   const changes = {
+  //     title: this.currentRoutineContext.title,
+  //     description: this.currentRoutineContext.description,
+  //     icon: iconName
+  //   };
+  //   await this.gymLogService.updateRoutine(routineId, changes);
+  //   this.#loadExercises()
+  // }
 
   // ##################################
   //     Navigation Handler
@@ -145,6 +163,7 @@ export default class HTMLService {
         this.navigate('screen-2', routine.title, routine.id);
         this.#loadExercises(routine.id);
       });
+
       this.routineListContainer.appendChild(routineCard);
     });
 
@@ -223,9 +242,13 @@ export default class HTMLService {
     const routineDecription = document.createElement('div');
     routineDecription.className = 'routine-description';
     routineDecription.innerHTML = `
-      <img src="./src/assets/${this.currentRoutineContext.icon}" alt="${this.currentRoutineContext.title}">
+      <img id="icon-routine" src="./src/assets/${this.currentRoutineContext.icon}" alt="${this.currentRoutineContext.title}">
       <h1>${this.currentRoutineContext.description}</h1>
       `;
+    routineDecription.querySelector('#icon-routine').addEventListener('click', () => {
+      this.editIconModal.showModal();
+    })
+
     this.exerciseListContainer.appendChild(routineDecription);
 
     if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
