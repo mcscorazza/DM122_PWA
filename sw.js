@@ -1,6 +1,7 @@
 const cacheName = "app-shell-v1";
 const assetsToCache = [
   "https://cdn.jsdelivr.net/npm/dexie@4.2.1/+esm",
+  "https://unpkg.com/lucide@latest/dist/umd/lucide.min.js",
   "src/css/components.css",
   "src/css/exercises.css",
   "src/css/header.css",
