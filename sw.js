@@ -22,7 +22,9 @@ const assetsToCache = [
   "src/modules/app.js",
   "src/modules/GymLogService.js",
   "src/modules/HTMLService.js",
-  "favicon.ico"
+  "favicon.ico",
+  "/index.html",
+  "/"
 ];
 
 self.addEventListener("install", (event) => {
