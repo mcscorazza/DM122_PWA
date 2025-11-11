@@ -21,53 +21,78 @@ export default class GymLogService {
     });
 
     db.on("populate", async () => {
-      await db.routines.bulkPut([
-        { title: "Treino A", description: "Peito | Tríceps", icon: "supino.png" },
-        { title: "Treino B", description: "Costas | Bíceps", icon: "biceps.png" },
-        { title: "Treino C", description: "Pernas | Ombro", icon: "leg-press.png" },
-      ]);
       await db.exercises.bulkPut([
-        { description: "Supino Reto", type: "Peito" },
-        { description: "Fly Maquina", type: "Peito" },
-        { description: "Rosca Direta com Barra W", type: "Biceps" },
-        { description: "Rosca Martelo com Halteres", type: "Biceps" },
-        { description: "Levantamento Lateral", type: "Ombro" },
-        { description: "Remada Baixa", type: "Costas" },
-        { description: "Puxador Peito", type: "Costas" },
-      ]);
 
-      const planId1 = await db.routineExercises.put(
-        { routineId: 1, exerciseId: 1, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
-      );
-      const planId2 = await db.routineExercises.put(
-        { routineId: 1, exerciseId: 2, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
-      );
-      const planId3 = await db.routineExercises.put(
-        { routineId: 1, exerciseId: 3, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
-      );
-      const planId4 = await db.routineExercises.put(
-        { routineId: 1, exerciseId: 4, targetSets: 3, targetReps: 12, targetWeight: 20, isDone: false }
-      );
+        // --- Peito ---
+        { description: "Supino Reto (Barra)", type: "Peito" },
+        { description: "Supino Inclinado (Barra)", type: "Peito" },
+        { description: "Supino Declinado (Barra)", type: "Peito" },
+        { description: "Supino Reto (Halteres)", type: "Peito" },
+        { description: "Supino Inclinado (Halteres)", type: "Peito" },
+        { description: "Crucifixo Reto (Halteres)", type: "Peito" },
+        { description: "Crucifixo Inclinado (Halteres)", type: "Peito" },
+        { description: "Voador (Máquina)", type: "Peito" },
+        { description: "Cross-over (Polia)", type: "Peito" },
+        { description: "Flexão de Braço", type: "Peito" },
 
-      await db.routineExerciseSets.bulkPut([
-        { planId: planId1, setNumber: 1, isDone: false },
-        { planId: planId1, setNumber: 2, isDone: false },
-        { planId: planId1, setNumber: 3, isDone: false },
-      ]);
-      await db.routineExerciseSets.bulkPut([
-        { planId: planId2, setNumber: 1, isDone: false },
-        { planId: planId2, setNumber: 2, isDone: false },
-        { planId: planId2, setNumber: 3, isDone: false },
-      ]);
-      await db.routineExerciseSets.bulkPut([
-        { planId: planId3, setNumber: 1, isDone: false },
-        { planId: planId3, setNumber: 2, isDone: false },
-        { planId: planId3, setNumber: 3, isDone: false },
-      ]);
-      await db.routineExerciseSets.bulkPut([
-        { planId: planId4, setNumber: 1, isDone: false },
-        { planId: planId4, setNumber: 2, isDone: false },
-        { planId: planId4, setNumber: 3, isDone: false },
+        // --- Costas ---
+        { description: "Barra Fixa (Pull-up)", type: "Costas" },
+        { description: "Puxada Frontal (Pulley)", type: "Costas" },
+        { description: "Puxada Triângulo (Pulley)", type: "Costas" },
+        { description: "Remada Curvada (Barra)", type: "Costas" },
+        { description: "Remada Cavalinho", type: "Costas" },
+        { description: "Remada Unilateral (Halter)", type: "Costas" },
+        { description: "Remada Baixa (Polia)", type: "Costas" },
+        { description: "Pulldown (Braços Estendidos)", type: "Costas" },
+        { description: "Hiperextensão Lombar", type: "Costas" },
+
+        // --- Bíceps ---
+        { description: "Rosca Direta (Barra Reta)", type: "Biceps" },
+        { description: "Rosca Direta (Barra W)", type: "Biceps" },
+        { description: "Rosca Alternada (Halteres)", type: "Biceps" },
+        { description: "Rosca Martelo (Halteres)", type: "Biceps" },
+        { description: "Rosca Scott (Máquina)", type: "Biceps" },
+        { description: "Rosca Concentrada (Halter)", type: "Biceps" },
+        { description: "Rosca na Polia (Corda)", type: "Biceps" },
+
+        // --- Tríceps ---
+        { description: "Tríceps Pulley (Barra)", type: "Triceps" },
+        { description: "Tríceps Pulley (Corda)", type: "Triceps" },
+        { description: "Tríceps Testa (Barra W)", type: "Triceps" },
+        { description: "Tríceps Francês (Halter)", type: "Triceps" },
+        { description: "Mergulho (Banco)", type: "Triceps" },
+        { description: "Supino Fechado", type: "Triceps" },
+        { description: "Tríceps Coice (Polia)", type: "Triceps" },
+
+        // --- Ombros ---
+        { description: "Desenvolvimento (Halteres)", type: "Ombro" },
+        { description: "Desenvolvimento Militar (Barra)", type: "Ombro" },
+        { description: "Elevação Lateral (Halteres)", type: "Ombro" },
+        { description: "Elevação Frontal (Halteres)", type: "Ombro" },
+        { description: "Elevação Lateral (Polia)", type: "Ombro" },
+        { description: "Crucifixo Invertido (Máquina)", type: "Ombro" },
+        { description: "Encolhimento (Halteres)", type: "Ombro" },
+        { description: "Remada Alta (Barra)", type: "Ombro" },
+
+        // --- Perna ---
+        { description: "Agachamento Livre (Barra)", type: "Perna" },
+        { description: "Agachamento Hack (Máquina)", type: "Perna" },
+        { description: "Leg Press 45°", type: "Perna" },
+        { description: "Cadeira Extensora", type: "Perna" },
+        { description: "Avanço (Passada)", type: "Perna" },
+        { description: "Agachamento Búlgaro (Halteres)", type: "Perna" },
+
+        // --- Perna ---
+        { description: "Levantamento Terra Stiff", type: "Perna" },
+        { description: "Mesa Flexora", type: "Perna" },
+        { description: "Cadeira Flexora", type: "Perna" },
+        { description: "Elevação Pélvica (Barra)", type: "Perna" },
+        { description: "Cadeira Abdutora", type: "Perna" },
+        { description: "Glúteo na Polia (Coice)", type: "Perna" },
+        { description: "Panturrilha em Pé (Máquina)", type: "Perna" },
+        { description: "Panturrilha Sentado (Máquina)", type: "Perna" },
+        { description: "Panturrilha no Leg Press", type: "Perna" },
+
       ]);
     });
     db.open();
