@@ -9,6 +9,7 @@ export default class GymLogService {
     this.#initializeDB();
   }
 
+  // DB Initialization
   #initializeDB() {
     console.log(`🚩 [GymLogService.js] initializing DB`);
     const db = new Dexie(DB_KEY);
@@ -113,6 +114,7 @@ export default class GymLogService {
     this.#db = db;
   }
 
+  // Routine 
   async save({ title, description, icon }) {
     const routineRecord = {
       title,
@@ -321,7 +323,7 @@ export default class GymLogService {
   }
 
   // ##################################
-  //      Exercise List Management
+  //      Exercise Library Management
   // ##################################
 
   async getAllExercises() {

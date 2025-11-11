@@ -10,9 +10,9 @@ export default class HTMLService {
     this.currentRoutineContext = null;
 
     // Header elements
-    this.headerTitle = document.getElementById('header-title');
-    this.btnBack = document.getElementById('btn-back');
     this.imgLogoApp = document.getElementById('logo-app');
+    this.btnBack = document.getElementById('btn-back');
+    this.headerTitle = document.getElementById('header-title');
     this.btnEditRoutineList = document.getElementById('btn-new-routine');
     this.btnEditWorkoutList = document.getElementById('btn-edit-workout-list');
 

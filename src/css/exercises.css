@@ -1,4 +1,4 @@
-.exercise-list-container>*+* {
+.workout-list-container>*+* {
   margin-top: 1rem;
 }
 
@@ -13,7 +13,7 @@
   font-size: 0.8rem;
   color: var(--secondary-color);
   width: 100%;
-  padding: 8px;
+  padding: 0 8px;
   border-radius: 8px;
 
   h2 {
@@ -22,7 +22,7 @@
   }
 
   img {
-    padding: 16px;
+    padding: 8px;
     cursor: pointer;
   }
 }

@@ -12,6 +12,7 @@ const assetsToCache = [
   "src/css/pages.css",
   "src/css/routines.css",
   "src/css/styles.css",
+  "src/css/workout.css",
   "src/assets/default.png",
   "src/assets/biceps.png",
   "src/assets/leg-press.png",
