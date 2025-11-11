@@ -1,6 +1,5 @@
 const cacheName = "app-shell-v1";
 const assetsToCache = [
-  "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap",
   "https://cdn.jsdelivr.net/npm/dexie@4.2.1/+esm",
   "src/css/components.css",
   "src/css/exercises.css",
@@ -18,12 +17,11 @@ const assetsToCache = [
   "src/assets/icons/gym-192x192.png",
   "src/assets/icons/gym-310x310.png",
   "src/assets/supino.png",
+  "src/assets/offline.png",
   "src/modules/app.js",
   "src/modules/GymLogService.js",
   "src/modules/HTMLService.js",
-  "favicon.ico",
-  "index.html",
-  "/",
+  "favicon.ico"
 ];
 
 self.addEventListener("install", (event) => {
@@ -74,7 +72,7 @@ async function networkFirst(request) {
     const cache = await caches.open(cacheName);
     const responseCached = await cache.match(request.url);
     if (!responseCached && request.headers.get("accept").startsWith("image/")) {
-      return cache.match("src/assets/images/offline.svg");
+      return cache.match("src/assets/offline.png");
     }
     return cache.match(request.url);
   }
