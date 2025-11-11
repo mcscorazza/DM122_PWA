@@ -24,7 +24,6 @@ const assetsToCache = [
   "src/modules/HTMLService.js",
   "favicon.ico",
   "/index.html",
-  "/"
 ];
 
 self.addEventListener("install", (event) => {
