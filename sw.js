@@ -28,27 +28,22 @@ const assetsToCache = [
   "favicon.ico",
   "manifest.json",
   "index.html",
-  "/",
 ];
 
 self.addEventListener("install", (event) => {
-  console.log(`🚩 [sw.js] installing static assets...`);
+  console.log(`🚩 [sw.js] installing static assets (v${APP_SHELL_CACHE})...`);
   self.skipWaiting();
   event.waitUntil(
     caches.open(APP_SHELL_CACHE).then(cache => {
       console.log(`🚩 [sw.js] Caching App Shell`);
-      return Promise.all(
-        assetsToCache.map(url => {
-          return cache.add(url).catch(err => {
-            console.error(`Failed to cache ${url}: ${err}`);
-          });
-        })
-      );
+      return cache.addAll(assetsToCache);
     }).then(() => {
       return caches.open(CDN_CACHE).then(cache => {
         console.log(`🚩 [sw.js] Caching CDN assets`);
         return cache.addAll([dexieUrl, lucideUrl]);
       });
+    }).catch(err => {
+      console.error("Cache.addAll falhou:", err);
     })
   );
 });
@@ -72,9 +67,9 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
-  if (url.protocol === 'chrome-extension:') {
-    return;
-  }
+
+  if (url.protocol === 'chrome-extension:') return;
+
   if (url.origin === self.location.origin) {
     event.respondWith(cacheFirst(request));
   } else {
@@ -84,12 +79,18 @@ self.addEventListener("fetch", (event) => {
 
 async function cacheFirst(request) {
   const cache = await caches.open(APP_SHELL_CACHE);
-  let cacheKey = request;
-  if (request.url === self.location.origin + '/DM122_PWA/') {
-    cacheKey = new Request('/DM122_PWA/index.html', request);
+  const cachedResponse = await cache.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
   }
-  const cachedResponse = await cache.match(cacheKey);
-  return cachedResponse || fetch(request).catch(async () => {
+  const url = new URL(request.url);
+  const isNavigation = request.mode === 'navigate';
+  const isRootPath = url.pathname === '/';
+  if (isNavigation && isRootPath) {
+    console.log(`🚩 [sw.js] Root navigation detected. Serving index.html from cache.`);
+    return cache.match('index.html');
+  }
+  return fetch(request).catch(async () => {
     if (request.headers.get("accept").startsWith("image/")) {
       return cache.match("src/assets/offline.png");
     }
