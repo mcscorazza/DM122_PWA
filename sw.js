@@ -1,5 +1,20 @@
-const cacheName = "app-shell-v4";
+const cacheName = "app-shell-v1";
 const assetsToCache = [
+  "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap",
+  "src/css/components.css",
+  "src/css/exercises.css",
+  "src/css/header.css",
+  "src/css/main.css",
+  "src/css/pages.css",
+  "src/css/routines.css",
+  "src/css/styles.css",
+  "src/assets/default.png",
+  "src/assets/biceps.png",
+  "src/assets/leg-press.png",
+  "src/assets/supino.png",
+  "src/modules/app.js",
+  "src/modules/GymLogService.js",
+  "src/modules/HTMLService.js",
   "favicon.ico",
   "index.html",
   "/",
@@ -19,7 +34,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  // console.log(`🚩 [sw.js] request: ${request.url}`);
+  console.log(`🚩 [sw.js] request: ${request.url}`);
   event.respondWith(proxy(request));
 });
 
