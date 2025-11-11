@@ -1,6 +1,7 @@
 const cacheName = "app-shell-v1";
 const assetsToCache = [
   "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap",
+  "https://cdn.jsdelivr.net/npm/dexie@4.2.1/+esm",
   "src/css/components.css",
   "src/css/exercises.css",
   "src/css/header.css",
@@ -11,6 +12,11 @@ const assetsToCache = [
   "src/assets/default.png",
   "src/assets/biceps.png",
   "src/assets/leg-press.png",
+  "src/assets/icons/gym-48x48.png",
+  "src/assets/icons/gym-96x96.png",
+  "src/assets/icons/gym-144x144.png",
+  "src/assets/icons/gym-192x192.png",
+  "src/assets/icons/gym-310x310.png",
   "src/assets/supino.png",
   "src/modules/app.js",
   "src/modules/GymLogService.js",
