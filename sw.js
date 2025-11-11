@@ -26,6 +26,8 @@ const assetsToCache = [
   "src/modules/GymLogService.js",
   "src/modules/HTMLService.js",
   "favicon.ico",
+  "manifest.json",
+  "index.html",
   "/",
 ];
 
@@ -35,7 +37,13 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(APP_SHELL_CACHE).then(cache => {
       console.log(`🚩 [sw.js] Caching App Shell`);
-      return cache.addAll(assetsToCache);
+      return Promise.all(
+        assetsToCache.map(url => {
+          return cache.add(url).catch(err => {
+            console.error(`Failed to cache ${url}: ${err}`);
+          });
+        })
+      );
     }).then(() => {
       return caches.open(CDN_CACHE).then(cache => {
         console.log(`🚩 [sw.js] Caching CDN assets`);
@@ -64,7 +72,9 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
-
+  if (url.protocol === 'chrome-extension:') {
+    return;
+  }
   if (url.origin === self.location.origin) {
     event.respondWith(cacheFirst(request));
   } else {
@@ -74,7 +84,11 @@ self.addEventListener("fetch", (event) => {
 
 async function cacheFirst(request) {
   const cache = await caches.open(APP_SHELL_CACHE);
-  const cachedResponse = await cache.match(request);
+  let cacheKey = request;
+  if (request.url === self.location.origin + '/DM122_PWA/') {
+    cacheKey = new Request('/DM122_PWA/index.html', request);
+  }
+  const cachedResponse = await cache.match(cacheKey);
   return cachedResponse || fetch(request).catch(async () => {
     if (request.headers.get("accept").startsWith("image/")) {
       return cache.match("src/assets/offline.png");
