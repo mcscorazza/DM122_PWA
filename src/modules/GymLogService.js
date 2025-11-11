@@ -21,6 +21,13 @@ export default class GymLogService {
     });
 
     db.on("populate", async () => {
+
+      await db.routines.bulkPut([
+        { title: "Treino A", description: "Peito/Tríceps", icon: "supino.png" },
+        { title: "Treino B", description: "Costas/Bíceps", icon: "biceps.png" },
+        { title: "Treino C", description: "Perna/Ombro", icon: "leg-press.png" },
+      ]);
+
       await db.exercises.bulkPut([
 
         // --- Peito ---
