@@ -100,6 +100,13 @@ export default class GymLogService {
         { description: "Panturrilha Sentado (Máquina)", type: "Perna" },
         { description: "Panturrilha no Leg Press", type: "Perna" },
 
+        // --- Abdômen ---
+        { description: "Abdominal Supra (Crunch)", type: "Abdomen" },
+        { description: "Elevação de Pernas (Paralela)", type: "Abdomen" },
+        { description: "Abdominal na Polia", type: "Abdomen" },
+        { description: "Prancha (Plank)", type: "Abdomen" },
+        { description: "Abdominal Bicicleta", type: "Abdomen" }
+
       ]);
     });
     db.open();

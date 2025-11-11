@@ -9,8 +9,8 @@
   gap: 4px;
   width: 100%;
   border-radius: 8px;
-  background-color: var(--secondary-color);
-  color: var(--background);
+  background-color: var(--btn-background);
+  color: var(--btn-text);
   padding: 16px;
   font-size: 1.2rem;
   font-weight: 700;
@@ -21,7 +21,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   &:hover {
-    background-color: var(--secondary-color-alpha);
+    background-color: var(--btn-background-hover);
   }
 }
 
