@@ -1,7 +1,10 @@
 const cacheName = "app-shell-v1";
+const CDN_CACHE = "cdn-assets-v1";
+
+const lucideUrl = "https://unpkg.com/lucide@0.553.0/dist/umd/lucide.min.js";
+const dexieUrl = "https://cdn.jsdelivr.net/npm/dexie@4.2.1/+esm";
+
 const assetsToCache = [
-  "https://cdn.jsdelivr.net/npm/dexie@4.2.1/+esm",
-  "https://unpkg.com/lucide@latest/dist/umd/lucide.min.js",
   "src/css/components.css",
   "src/css/exercises.css",
   "src/css/header.css",
@@ -23,59 +26,71 @@ const assetsToCache = [
   "src/modules/GymLogService.js",
   "src/modules/HTMLService.js",
   "favicon.ico",
-  "index.html",
+  "/",
 ];
 
 self.addEventListener("install", (event) => {
   console.log(`🚩 [sw.js] installing static assets...`);
   self.skipWaiting();
-  event.waitUntil(cacheStaticAssets());
+  event.waitUntil(
+    caches.open(APP_SHELL_CACHE).then(cache => {
+      console.log(`🚩 [sw.js] Caching App Shell`);
+      return cache.addAll(assetsToCache);
+    }).then(() => {
+      return caches.open(CDN_CACHE).then(cache => {
+        console.log(`🚩 [sw.js] Caching CDN assets`);
+        return cache.addAll([dexieUrl, lucideUrl]);
+      });
+    })
+  );
 });
 
 self.addEventListener("activate", (event) => {
   console.log(`🚩 [sw.js] activated`);
-  event.waitUntil(cacheCleanup());
+  const currentCaches = [APP_SHELL_CACHE, CDN_CACHE];
+  event.waitUntil(
+    caches.keys().then(keyList => {
+      return Promise.all(keyList.map(key => {
+        if (!currentCaches.includes(key)) {
+          console.log(`🚩 [sw.js] removing old cache: ${key}`);
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
   self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  console.log(`🚩 [sw.js] request: ${request.url}`);
-  event.respondWith(proxy(request));
+  const url = new URL(request.url);
+
+  if (url.origin === self.location.origin) {
+    event.respondWith(cacheFirst(request));
+  } else {
+    event.respondWith(staleWhileRevalidate(request));
+  }
 });
 
-async function cacheStaticAssets() {
-  const cache = await caches.open(cacheName);
-  return cache.addAll(assetsToCache);
-}
-
-async function removeOldCache(key) {
-  if (key !== cacheName) {
-    console.log(`🚩 [sw.js] removing old cache: ${key}`);
-    return caches.delete(key);
-  }
-}
-
-async function cacheCleanup() {
-  const keyList = await caches.keys();
-  return Promise.all(keyList.map(removeOldCache));
-}
-
-async function proxy(request) {
-  // console.log(`🚩 [sw.js] proxying...`);
-  const url = new URL(request.url);
-  return networkFirst(request);
-}
-
-async function networkFirst(request) {
-  try {
-    return await fetch(request);
-  } catch (error) {
-    const cache = await caches.open(cacheName);
-    const responseCached = await cache.match(request.url);
-    if (!responseCached && request.headers.get("accept").startsWith("image/")) {
+async function cacheFirst(request) {
+  const cache = await caches.open(APP_SHELL_CACHE);
+  const cachedResponse = await cache.match(request);
+  return cachedResponse || fetch(request).catch(async () => {
+    if (request.headers.get("accept").startsWith("image/")) {
       return cache.match("src/assets/offline.png");
     }
-    return cache.match(request.url);
-  }
+    return;
+  });
+}
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CDN_CACHE);
+  const cachedResponse = await cache.match(request);
+  const networkFetch = fetch(request).then(networkResponse => {
+    cache.put(request, networkResponse.clone());
+    return networkResponse;
+  }).catch(err => {
+    console.warn(`🚩 [sw.js] CDN fetch failed: ${request.url}`, err);
+  });
+  return cachedResponse || networkFetch;
 }
