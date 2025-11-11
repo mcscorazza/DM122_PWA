@@ -1,41 +1,49 @@
 export default class HTMLService {
   constructor(gymLogService) {
+    this.gymLogService = gymLogService;
+
+    // Main Page
+    this.pages = document.querySelectorAll('.page');
+
+    // Context variables
+    this.currentPageId = 'screen-1';
+    this.currentRoutineContext = null;
+
+    // Header elements
     this.headerTitle = document.getElementById('header-title');
-
     this.btnBack = document.getElementById('btn-back');
-    this.btnReset = document.getElementById('reset');
-
     this.imgLogoApp = document.getElementById('logo-app');
     this.btnEditRoutineList = document.getElementById('btn-new-routine');
-    this.btnEditExerciseList = document.getElementById('btn-edit-exercise-list');
+    this.btnEditWorkoutList = document.getElementById('btn-edit-workout-list');
 
-    this.pages = document.querySelectorAll('.page');
+    // Footer Buttons
+    this.btnReset = document.getElementById('reset');
+    this.newRoutineButton = document.getElementById('btn-new-routine');
     this.footerButtons = document.getElementById('footer-buttons')
 
+    // Routines Elements
     this.routineListContainer = document.getElementById('routine-list');
-    this.exerciseListContainer = document.getElementById('exercise-list');
-    this.exerciseDetailsContainer = document.getElementById('exercise-details');
 
-    this.newRoutineButton = document.getElementById('btn-new-routine');
+    // Workout List Elements
+    this.workoutListContainer = document.getElementById('workout-list');
+    this.workoutDetailsContainer = document.getElementById('workout-details');
 
+    // Exercises Library Management Elements
     this.exerciseEditorForm = document.getElementById('exercise-editor-form');
     this.exerciseEditorList = document.getElementById('exercise-editor-list');
     this.btnCancelEdit = document.getElementById('btn-cancel-edit');
-
     this.btnGotoExerciseEditor = document.getElementById('btn-goto-exercise-editor');
-    this.exerciseEditorForm = document.getElementById('exercise-editor-form');
     this.exerciseEditorList = document.getElementById('exercise-editor-list');
     this.btnCancelEdit = document.getElementById('btn-cancel-edit');
 
-    // MODAL
+    // MODAL Edit Routine Elements 
     this.editRoutineModal = document.getElementById('edit-routine-modal');
     this.editRoutineForm = document.getElementById('edit-routine-form');
     this.btnCancelEditRoutine = document.getElementById('btn-cancel-edit-routine');
-
     this.editIconModal = document.getElementById('edit-icon-modal');
     this.routineIdForIconEdit = null;
 
-    // MODAL Add Exercises
+    // MODAL Management Exercises Elements
     this.addExerciseDetailsModal = document.getElementById('add-exercise-details-modal');
     this.addExerciseDetailsForm = document.getElementById('add-exercise-details-form');
     this.btnCancelAddExercise = document.getElementById('btn-cancel-add-exercise');
@@ -43,7 +51,7 @@ export default class HTMLService {
     this.exerciseSelect = document.getElementById('exercise-select');
     this.exerciseLibraryCache = [];
 
-    // MODAL Confirmation
+    // MODAL Confirmation Elements
     this.confirmModal = document.getElementById('confirm-modal');
     this.confirmModalTitle = document.getElementById('confirm-modal-title');
     this.confirmModalMessage = document.getElementById('confirm-modal-message');
@@ -55,37 +63,35 @@ export default class HTMLService {
     this.confirmModalErrorView = document.getElementById('confirm-modal-error-view');
     this.confirmModalErrorMessage = document.getElementById('confirm-modal-error-message');
 
-    this.gymLogService = gymLogService;
-    this.navigate('screen-1', 'Minhas Rotinas');
-
-    this.#renderRoutines();
-
-    this.currentPageId = 'screen-1';
-    this.currentRoutineContext = null;
-
+    // Header Back Btn Event
     this.btnBack.addEventListener('click', () => {
       this.#handleGoBack();
     });
 
+    // Footer Reset Btn Event
     this.btnReset.addEventListener('click', async () => {
       this.#handleGeneralReset()
     });
 
+    // Open Exercise Library Management
     this.btnGotoExerciseEditor.addEventListener('click', () => {
       this.navigate('screen-4', 'Editor de Exercícios');
       this.#loadExerciseEditor();
     });
 
+    // Exercise Library Save Event
     this.exerciseEditorForm.addEventListener('submit', (event) => {
       event.preventDefault();
       this.#handleSaveExercise();
     });
 
+    // Create new Routine Event
     this.newRoutineButton.addEventListener('click', () => {
       this.#handleCreateRoutine();
     });
 
-    this.btnEditExerciseList.addEventListener('click', () => {
+
+    this.btnEditWorkoutList.addEventListener('click', () => {
       this.#handleEditRoutine(this.currentRoutineContext.id);
     })
 
@@ -93,15 +99,35 @@ export default class HTMLService {
       this.#clearExerciseForm();
     });
 
+    // Edit Routine Save Btn Event
     this.editRoutineForm.addEventListener('submit', (event) => {
       event.preventDefault();
       this.#handleSubmitEditRoutine();
     });
 
+    // Edit Routine Cancel Btn Event
     this.btnCancelEditRoutine.addEventListener('click', () => {
       this.editRoutineModal.close();
     });
 
+    // Add Exercise Save Btn Event
+    this.addExerciseDetailsForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      this.#handleSubmitAddExercise();
+    });
+
+    // Add Exercise Cancel Btn Event
+    this.btnCancelAddExercise.addEventListener('click', () => {
+      this.addExerciseDetailsModal.close();
+    });
+
+    // Filter Buttons Event
+    this.exerciseFilterButtons.addEventListener('click', (event) => {
+      if (event.target.tagName !== 'BUTTON') return;
+      this.#handleFilterClick(event);
+    });
+
+    // Change Icon Click Event
     this.editIconModal.addEventListener('click', (event) => {
       const clickedContainer = event.target.closest('.icon-box');
       if (!clickedContainer) return;
@@ -110,20 +136,7 @@ export default class HTMLService {
       this.#drawExerciseList();
     });
 
-    this.addExerciseDetailsForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      this.#handleSubmitAddExercise();
-    });
-
-    this.btnCancelAddExercise.addEventListener('click', () => {
-      this.addExerciseDetailsModal.close();
-    });
-
-    this.exerciseFilterButtons.addEventListener('click', (event) => {
-      if (event.target.tagName !== 'BUTTON') return;
-      this.#handleFilterClick(event);
-    });
-
+    // Generic Confirm Modal Handler
     this.confirmModal.addEventListener('click', (event) => {
       const action = event.target.dataset.action;
       if (action === 'confirm') {
@@ -135,6 +148,10 @@ export default class HTMLService {
         this.confirmModalCallback = null;
       }
     });
+
+    // Operations in load constructor
+    this.navigate('screen-1', 'Minhas Rotinas');
+    this.#renderRoutines();
   }
 
   // ##################################
@@ -156,21 +173,21 @@ export default class HTMLService {
       this.footerButtons.classList.remove('hidden');
       this.btnBack.classList.add('hidden');
       this.btnEditRoutineList.classList.remove('hidden');
-      this.btnEditExerciseList.classList.add('hidden');
+      this.btnEditWorkoutList.classList.add('hidden');
     }
     if (pageId === 'screen-2') {
       this.imgLogoApp.classList.add('hidden');
       this.footerButtons.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
       this.btnEditRoutineList.classList.add('hidden');
-      this.btnEditExerciseList.classList.remove('hidden');
+      this.btnEditWorkoutList.classList.remove('hidden');
     }
     if (pageId === 'screen-3' || pageId === 'screen-4') {
       this.imgLogoApp.classList.add('hidden');
       this.footerButtons.classList.add('hidden');
       this.btnBack.classList.remove('hidden');
       this.btnEditRoutineList.classList.add('hidden');
-      this.btnEditExerciseList.classList.add('hidden');
+      this.btnEditWorkoutList.classList.add('hidden');
     }
   }
 
@@ -347,7 +364,7 @@ export default class HTMLService {
   }
 
   #drawExerciseList() {
-    this.exerciseListContainer.innerHTML = '';
+    this.workoutListContainer.innerHTML = '';
     const routineDecription = document.createElement('div');
     routineDecription.className = 'routine-description';
     routineDecription.innerHTML = `
@@ -359,13 +376,13 @@ export default class HTMLService {
       this.editIconModal.showModal();
     })
 
-    this.exerciseListContainer.appendChild(routineDecription);
+    this.workoutListContainer.appendChild(routineDecription);
 
     if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
       const emptyStateDiv = document.createElement('div');
       emptyStateDiv.className = 'empty-state-container';
       emptyStateDiv.innerHTML = `<p class="empty-list-message">Nenhum exercício cadastrado nesta rotina.</p>`;
-      this.exerciseListContainer.appendChild(emptyStateDiv);
+      this.workoutListContainer.appendChild(emptyStateDiv);
     } else {
       const groupedExercises = new Map();
       this.currentExercisePlan.forEach(exercise => {
@@ -381,11 +398,11 @@ export default class HTMLService {
         const titleEl = document.createElement('h2');
         titleEl.className = 'exercise-group-title';
         titleEl.textContent = type;
-        this.exerciseListContainer.appendChild(titleEl);
+        this.workoutListContainer.appendChild(titleEl);
 
         const hrEl = document.createElement('hr');
         hrEl.className = 'exercise-group-divider';
-        this.exerciseListContainer.appendChild(hrEl);
+        this.workoutListContainer.appendChild(hrEl);
 
         exercisesInGroup.forEach(exercise => {
           const exerciseCard = document.createElement('div');
@@ -408,7 +425,7 @@ export default class HTMLService {
             this.navigate('screen-3', this.currentRoutineContext.title);
           });
 
-          this.exerciseListContainer.appendChild(exerciseCard);
+          this.workoutListContainer.appendChild(exerciseCard);
         });
       });
     }
@@ -420,10 +437,10 @@ export default class HTMLService {
         <i data-lucide="plus"></i> Adicionar Exercício
       </button>
     `;
-    this.exerciseListContainer.appendChild(addExercisesDiv);
+    this.workoutListContainer.appendChild(addExercisesDiv);
 
 
-    this.exerciseListContainer.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
+    this.workoutListContainer.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
       this.#openAddExerciseModal();
     });
 
@@ -445,7 +462,7 @@ export default class HTMLService {
       this.#handleDeleteRoutine(this.currentRoutineContext.id, this.currentRoutineContext.title);
     });
 
-    this.exerciseListContainer.appendChild(routineActionsDiv);
+    this.workoutListContainer.appendChild(routineActionsDiv);
 
     lucide.createIcons();
   }
@@ -534,13 +551,13 @@ export default class HTMLService {
     if (!this.currentActiveExercise) return;
 
     const { plan, sets } = this.currentActiveExercise;
-    this.exerciseDetailsContainer.innerHTML = '';
+    this.workoutDetailsContainer.innerHTML = '';
 
     const exerciseTitle = document.createElement('h1');
     exerciseTitle.className = 'exercise-detail-title';
     exerciseTitle.innerText = plan.description;
 
-    this.exerciseDetailsContainer.appendChild(exerciseTitle);
+    this.workoutDetailsContainer.appendChild(exerciseTitle);
 
     sets.forEach(set => {
       const setCard = document.createElement('div');
@@ -562,7 +579,7 @@ export default class HTMLService {
         this.#handleSetCheck(set.id);
       });
 
-      this.exerciseDetailsContainer.appendChild(setCard);
+      this.workoutDetailsContainer.appendChild(setCard);
     });
 
     const finishButton = document.createElement('button');
@@ -572,7 +589,7 @@ export default class HTMLService {
     finishButton.addEventListener('click', () => {
       this.#handleFinishExercise(plan.planId);
     });
-    this.exerciseDetailsContainer.appendChild(finishButton);
+    this.workoutDetailsContainer.appendChild(finishButton);
 
 
     const deleteButton = document.createElement('button');
@@ -581,7 +598,7 @@ export default class HTMLService {
     deleteButton.addEventListener('click', () => {
       this.#handleDeleteExerciseFromPlan(plan.planId, plan.description);
     });
-    this.exerciseDetailsContainer.appendChild(deleteButton);
+    this.workoutDetailsContainer.appendChild(deleteButton);
 
     lucide.createIcons();
   }
