@@ -1,4 +1,4 @@
-const cacheName = "app-shell-v1";
+const APP_SHELL_CACHE = "app-shell-v1";
 const CDN_CACHE = "cdn-assets-v1";
 
 const lucideUrl = "https://unpkg.com/lucide@0.553.0/dist/umd/lucide.min.js";
