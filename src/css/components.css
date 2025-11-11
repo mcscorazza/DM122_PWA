@@ -49,3 +49,24 @@
 .exercise-icon {
   color: var(--secondary-color);
 }
+
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+  gap: 16px;
+  color: #166534;
+}
+
+.success-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.success-content p {
+  font-size: 1.1em;
+  font-weight: 500;
+  margin: 0;
+}

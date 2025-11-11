@@ -43,6 +43,16 @@ export default class HTMLService {
     this.exerciseSelect = document.getElementById('exercise-select');
     this.exerciseLibraryCache = [];
 
+    // MODAL Confirmation
+    this.confirmModal = document.getElementById('confirm-modal');
+    this.confirmModalTitle = document.getElementById('confirm-modal-title');
+    this.confirmModalMessage = document.getElementById('confirm-modal-message');
+    this.confirmModalPromptView = document.getElementById('confirm-modal-prompt-view');
+    this.confirmModalSuccessView = document.getElementById('confirm-modal-success-view');
+    this.confirmModalSuccessMessage = document.getElementById('confirm-modal-success-message');
+    this.confirmModalActions = document.getElementById('confirm-modal-actions');
+    this.confirmModalCallback = null; // (Isto você já tem)
+
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
 
@@ -108,9 +118,19 @@ export default class HTMLService {
       if (event.target.tagName !== 'BUTTON') return;
       this.#handleFilterClick(event);
     });
+
+    this.confirmModal.addEventListener('click', (event) => {
+      const action = event.target.dataset.action;
+      if (action === 'confirm') {
+        if (this.confirmModalCallback) {
+          this.confirmModalCallback();
+        }
+      } else if (action === 'cancel') {
+        this.confirmModal.close();
+        this.confirmModalCallback = null;
+      }
+    });
   }
-
-
 
   async #handleSubmitEditIcon(iconSrc) {
     if (!this.routineIdForIconEdit) {
@@ -242,13 +262,34 @@ export default class HTMLService {
   }
 
   async #handleDeleteRoutine(routineId, routineTitle) {
-    const confirmation = confirm(`Tem certeza que deseja excluir a rotina "${routineTitle}"?\n\nTODOS os dados desta rotina serão perdidos.`);
-    if (confirmation) {
-      await this.gymLogService.deleteRoutineAndData(routineId);
-      alert(`Rotina "${routineTitle}" deletada com sucesso.`);
-      this.navigate('screen-1', 'Minhas Rotinas');
-      this.#renderRoutines();
-    }
+    const deleteAction = async () => {
+      try {
+        this.confirmModalPromptView.style.display = 'none';
+        this.confirmModalActions.style.display = 'none';
+        await this.gymLogService.deleteRoutineAndData(routineId);
+        this.confirmModalSuccessMessage.textContent = `Rotina "${routineTitle}" deletada!`;
+        this.confirmModalSuccessView.style.display = 'block';
+        lucide.createIcons();
+
+        setTimeout(() => {
+          this.confirmModal.close();
+          this.navigate('screen-1', 'Minhas Rotinas');
+          this.#renderRoutines();
+          this.confirmModalCallback = null;
+        }, 2000);
+
+      } catch (error) {
+        console.error("Erro ao deletar rotina:", error);
+        this.confirmModal.close();
+        alert("Ocorreu um erro ao deletar a rotina.");
+        this.confirmModalCallback = null;
+      }
+    };
+    this.#showConfirmModal(
+      `Excluir Rotina`,
+      `Tem certeza que deseja excluir a rotina "${routineTitle}"?`,
+      deleteAction
+    );
   }
 
   // ##################################
@@ -272,7 +313,7 @@ export default class HTMLService {
     routineDecription.className = 'routine-description';
     routineDecription.innerHTML = `
       <img id="icon-routine" src="./src/assets/${this.currentRoutineContext.icon}" alt="${this.currentRoutineContext.title}">
-      <h1>${this.currentRoutineContext.description}</h1>
+      <h2>${this.currentRoutineContext.description}</h2>
       `;
     routineDecription.querySelector('#icon-routine').addEventListener('click', () => {
       this.routineIdForIconEdit = this.currentRoutineContext.id;
@@ -460,6 +501,7 @@ export default class HTMLService {
     const exerciseTitle = document.createElement('h1');
     exerciseTitle.className = 'exercise-detail-title';
     exerciseTitle.innerText = plan.description;
+
     this.exerciseDetailsContainer.appendChild(exerciseTitle);
 
     sets.forEach(set => {
@@ -496,7 +538,7 @@ export default class HTMLService {
 
 
     const deleteButton = document.createElement('button');
-    deleteButton.className = 'btn-danger btn-delete-from-plan'; // Classe para estilizar
+    deleteButton.className = 'btn btn-delete-from-plan';
     deleteButton.textContent = 'Excluir Exercício da Rotina';
     deleteButton.addEventListener('click', () => {
       this.#handleDeleteExerciseFromPlan(plan.planId, plan.description);
@@ -507,22 +549,40 @@ export default class HTMLService {
   }
 
   async #handleDeleteExerciseFromPlan(planId, exerciseDescription) {
-    const confirmation = confirm(`Tem certeza que deseja EXCLUIR "${exerciseDescription}" desta rotina?\n\nIsso não pode ser desfeito.`);
-    if (confirmation) {
+    const deleteAction = async () => {
       try {
+
+        this.confirmModalPromptView.style.display = 'none';
+        this.confirmModalActions.style.display = 'none';
         await this.gymLogService.deleteExerciseFromPlan(planId);
-        alert("Exercício removido da rotina.");
-        if (this.currentRoutineContext) {
-          this.navigate('screen-2', this.currentRoutineContext.title);
-          this.#loadExercises(this.currentRoutineContext.id);
-        } else {
-          this.navigate('screen-1', 'Minhas Rotinas');
-          this.#renderRoutines();
-        }
+        this.confirmModalSuccessMessage.textContent = `Exercício "${exerciseDescription}" removido!`;
+        this.confirmModalSuccessView.style.display = 'block';
+        lucide.createIcons();
+        setTimeout(() => {
+          this.confirmModal.close();
+          this.confirmModalCallback = null;
+          if (this.currentRoutineContext) {
+            this.navigate('screen-2', this.currentRoutineContext.title);
+            this.#loadExercises(this.currentRoutineContext.id); // Recarrega a screen-2
+          } else {
+            this.navigate('screen-1', 'Minhas Rotinas');
+            this.#renderRoutines();
+          }
+        }, 2000);
+
       } catch (error) {
-        console.error("Erro ao tentar deletar exercício:", error);
+        console.error("Erro ao deletar exercício do plano:", error);
+        this.confirmModal.close();
+        this.confirmModalCallback = null;
+        alert("Ocorreu um erro ao remover o exercício.");
       }
-    }
+    };
+
+    this.#showConfirmModal(
+      `Excluir Exercício`,
+      `Tem certeza que deseja excluir "${exerciseDescription}" desta rotina?`,
+      deleteAction
+    );
   }
 
   async #handleSetCheck(setId) {
@@ -642,4 +702,14 @@ export default class HTMLService {
     }
   }
 
+  #showConfirmModal(title, message, onConfirm) {
+    this.confirmModalTitle.textContent = title;
+    this.confirmModalMessage.textContent = message;
+    this.confirmModalCallback = onConfirm;
+
+    this.confirmModalPromptView.style.display = 'block';
+    this.confirmModalActions.style.display = 'flex';
+    this.confirmModalSuccessView.style.display = 'none';
+    this.confirmModal.showModal();
+  }
 }

@@ -176,7 +176,7 @@ export default class GymLogService {
   async createNewRoutine(title) {
     const newRoutine = {
       title: title,
-      description: "Edite para adicionar uma descrição",
+      description: "Descrição...",
       icon: "default.png",
     };
     try {

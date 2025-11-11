@@ -2,6 +2,9 @@
   margin-top: 1rem;
 }
 
+.add-new-exercises {
+  margin-top: 200px;
+}
 .routine-description {
   display: flex;
   align-items: center;
@@ -12,7 +15,7 @@
   padding: 8px;
   border-radius: 8px;
 
-  h1 {
+  h2 {
     width: 100%;
     margin-left: 16px;
   }

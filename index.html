@@ -192,6 +192,31 @@
     </form>
   </dialog>
 
+  <!-- Modal Confirmation -->
+  <dialog id="confirm-modal" class="modal">
+  <div class="modal-form">
+    <div id="confirm-modal-prompt-view">
+      <h3 id="confirm-modal-title">Título</h3>
+      <p id="confirm-modal-message">Mensagem...</p>
+    </div>
+    <div id="confirm-modal-success-view" style="display: none;">
+      <div class="success-content">
+        <i data-lucide="check-circle" class="success-icon"></i>
+        <p id="confirm-modal-success-message">Ação concluída!</p>
+      </div>
+    </div>
+    <div id="confirm-modal-actions" class="modal-actions">
+      <button type="button" class="btn" data-action="cancel">
+        Cancelar
+      </button>
+      <button type="button" class="btn" data-action="confirm">
+        Confirmar
+      </button>
+    </div>
+    
+  </div>
+</dialog>
+
 </body>
 
 </html>
