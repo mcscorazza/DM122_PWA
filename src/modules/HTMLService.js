@@ -216,6 +216,7 @@ export default class HTMLService {
     const title = "Treino Novo"
     if (title) {
       await this.gymLogService.createNewRoutine(title);
+      this.#showSuccessAlert("Nova rotina de Treinos criada com sucesso!")
       this.#renderRoutines();
     }
   }
