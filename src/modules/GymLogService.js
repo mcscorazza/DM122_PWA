@@ -262,6 +262,26 @@ export default class GymLogService {
     }
   }
 
+  async deleteExerciseFromPlan(planId) {
+    try {
+      await this.#db.transaction(
+        'rw',
+        this.#db.routineExercises,
+        this.#db.routineExerciseSets,
+        async () => {
+        await this.#db.routineExerciseSets
+                      .where('planId')
+                      .equals(planId)
+                      .delete();
+                      
+        await this.#db.routineExercises.delete(planId);
+      });
+      console.log(`🚩 Exercício do plano (ID: ${planId}) e seus sets foram deletados.`);
+    } catch (error) {
+      console.error("Erro ao deletar exercício do plano:", error);
+    }
+  }
+
   // ##################################
   //      Exercise List Management
   // ##################################

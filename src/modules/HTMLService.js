@@ -105,7 +105,7 @@ export default class HTMLService {
     });
 
     this.exerciseFilterButtons.addEventListener('click', (event) => {
-      if (event.target.tagName !== 'BUTTON') return; 
+      if (event.target.tagName !== 'BUTTON') return;
       this.#handleFilterClick(event);
     });
   }
@@ -372,7 +372,7 @@ export default class HTMLService {
 
   async #openAddExerciseModal() {
     this.exerciseLibraryCache = await this.gymLogService.getAllExercises();
-    this.#populateExerciseSelect('all'); 
+    this.#populateExerciseSelect('all');
     this.#updateFilterButtons('all');
     this.addExerciseDetailsForm.querySelector('#add-exercise-routine-id').value = this.currentRoutineContext.id;
     this.addExerciseDetailsModal.showModal();
@@ -385,7 +385,7 @@ export default class HTMLService {
   }
 
   #populateExerciseSelect(filterType) {
-    this.exerciseSelect.innerHTML = ''; 
+    this.exerciseSelect.innerHTML = '';
     const filteredList = this.exerciseLibraryCache.filter(ex => {
       return filterType === 'all' || ex.type === filterType;
     });
@@ -492,10 +492,37 @@ export default class HTMLService {
     finishButton.addEventListener('click', () => {
       this.#handleFinishExercise(plan.planId);
     });
-
     this.exerciseDetailsContainer.appendChild(finishButton);
 
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'btn-danger btn-delete-from-plan'; // Classe para estilizar
+    deleteButton.textContent = 'Excluir Exercício da Rotina';
+    deleteButton.addEventListener('click', () => {
+      this.#handleDeleteExerciseFromPlan(plan.planId, plan.description);
+    });
+    this.exerciseDetailsContainer.appendChild(deleteButton);
+
     lucide.createIcons();
+  }
+
+  async #handleDeleteExerciseFromPlan(planId, exerciseDescription) {
+    const confirmation = confirm(`Tem certeza que deseja EXCLUIR "${exerciseDescription}" desta rotina?\n\nIsso não pode ser desfeito.`);
+    if (confirmation) {
+      try {
+        await this.gymLogService.deleteExerciseFromPlan(planId);
+        alert("Exercício removido da rotina.");
+        if (this.currentRoutineContext) {
+          this.navigate('screen-2', this.currentRoutineContext.title);
+          this.#loadExercises(this.currentRoutineContext.id);
+        } else {
+          this.navigate('screen-1', 'Minhas Rotinas');
+          this.#renderRoutines();
+        }
+      } catch (error) {
+        console.error("Erro ao tentar deletar exercício:", error);
+      }
+    }
   }
 
   async #handleSetCheck(setId) {
