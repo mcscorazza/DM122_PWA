@@ -214,7 +214,7 @@ export default class GymLogService {
         console.log(`🚩 Sets deletados para a rotina ${routineId}`);
 
         await this.#db.routineExercises
-          .where('planId')
+          .where('id')
           .anyOf(planIds)
           .delete();
         console.log(`🚩 Exercícios do plano deletados para a rotina ${routineId}`);
