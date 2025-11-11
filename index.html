@@ -1,222 +1,273 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GymLog PWA</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="src/modules/app.js"></script>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="./src/assets/icons/gym-48x48.png" type="image/png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="./src/css/styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GymLog PWA</title>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script type="module" src="src/modules/app.js"></script>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <link rel="icon" href="./src/assets/icons/gym-48x48.png" type="image/png" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./src/css/styles.css" />
-</head>
-
-<body>
-  <!-- Header of the all screens -->
-  <header class="main-header">
-    <img src="./src/assets/icons/gym-96x96.png" id="logo-app" class="header-img" alt="" />
-    <button id="btn-back" class="header-btn hidden">
-      <i data-lucide="chevron-left" class="edit-btn"></i>
-    </button>
-    <h1 id="header-title" class="header-title">Minhas Rotinas</h1>
-    <button id="btn-new-routine" class="header-btn">
-      <i data-lucide="list-plus" class="edit-btn"></i>
-    </button>
-    <button id="btn-exercise-list" class="header-btn">
-      <i data-lucide="square-pen" class="edit-btn"></i>
-    </button>
-  </header>
-
-  <!-- Main body for the screens and buttons -->
-  <main id="app-container" class="main-container">
-    <div class="main-content-wrapper">
-      <!-- Initial screen | Routines List -->
-      <div id="screen-1" class="page">
-        <div id="routine-list" class="routine-list-container"></div>
-      </div>
-
-      <!-- Screen 2 | List the Exercises for a Routine -->
-      <div id="screen-2" class="page">
-        <div id="exercise-list" class="exercise-list-container"></div>
-      </div>
-
-      <!-- Screen 3 | Show details for the Exercise selected -->
-      <div id="screen-3" class="page">
-        <div id="exercise-details" class="exercise-details-container"></div>
-      </div>
-
-      <!-- Screen 4 | Create and Edit the Complete Exercises List -->
-      <div class="page" id="screen-4">
-        <form id="exercise-editor-form" class="exercise-form">
-          <h3>Novo Exercício</h3>
-          <input type="hidden" id="exercise-id" name="id" />
-          <div class="form-group">
-            <label for="exercise-description">Descrição:</label>
-            <input type="text" id="exercise-description" name="description" required />
-          </div>
-          <div class="form-group">
-            <label for="exercise-type">Tipo (Grupo Muscular):</label>
-            <select name="type" id="exercise-type">
-              <option value="Peito">Peito</option>
-              <option value="Costas">Costas</option>
-              <option value="Biceps">Biceps</option>
-              <option value="Triceps">Triceps</option>
-              <option value="Perna">Perna</option>
-              <option value="Ombro">Ombro</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn">Salvar</button>
-            <button type="button" id="btn-cancel-edit" class="btn">
-              Cancelar
-            </button>
-          </div>
-        </form>
-        <hr />
-        <h2>Exercícios Salvos</h2>
-        <div id="exercise-editor-list"></div>
-      </div>
-    </div>
-
-    <!-- Screen 5 | Create a Exercise List to a Rotine -->
-    <div class="page" id="screen-5">
-      <h2>Selecione um Exercício</h2>
-      <div id="exercise-library-list"></div>
-    </div>
-
-    <!-- Management Buttons -->
-    <div id="footer-buttons" class="footer-buttons">
-      <button id="btn-goto-exercise-editor" class="btn btn-exercise">
-        Gerenciar Exercícios
+  <body>
+    <!-- Header of the all screens -->
+    <header class="main-header">
+      <img
+        src="./src/assets/icons/gym-96x96.png"
+        id="logo-app"
+        class="header-img"
+        alt=""
+      />
+      <button id="btn-back" class="header-btn hidden">
+        <i data-lucide="chevron-left" class="edit-btn"></i>
       </button>
-      <button id="reset" class="btn btn-reset">RESET</button>
-    </div>
-  </main>
+      <h1 id="header-title" class="header-title">Minhas Rotinas</h1>
+      <button id="btn-new-routine" class="header-btn">
+        <i data-lucide="list-plus" class="edit-btn"></i>
+      </button>
+      <button id="btn-edit-exercise-list" class="header-btn">
+        <i data-lucide="edit-3" class="edit-btn"></i>
+      </button>
+    </header>
 
-  <!-- Modal Dialog to Edit a Routine -->
-  <dialog id="edit-routine-modal" class="modal">
-    <form id="edit-routine-form" class="modal-form">
-      <h3>Editar Rotina</h3>
-      <input type="hidden" id="edit-routine-id" name="id" />
-      <div class="form-group">
-        <label for="edit-routine-title">Título:</label>
-        <input type="text" id="edit-routine-title" name="title" required />
-      </div>
-      <div class="form-group">
-        <label for="edit-routine-description">Descrição:</label>
-        <input type="text" id="edit-routine-description" name="description" required />
-      </div>
-      <div class="modal-actions">
-        <button type="button" id="btn-cancel-edit-routine" class="btn">
-          Cancelar
-        </button>
-        <button type="submit" class="btn">Salvar</button>
-      </div>
-    </form>
-  </dialog>
+    <!-- Main body for the screens and buttons -->
+    <main id="app-container" class="main-container">
+      <div class="main-content-wrapper">
+        <!-- Initial screen | Routines List -->
+        <div id="screen-1" class="page">
+          <div id="routine-list" class="routine-list-container"></div>
+        </div>
 
-  <!-- Modal Dialog to Change Icon -->
-  <dialog id="edit-icon-modal" class="modal">
-    <div class="icons-container">
-      <div class="icon-box" data-src="default.png">
-        <img src="./src/assets/default.png" alt="Default" />
-        <span>Default</span>
-      </div>
-      <div class="icon-box" data-src="biceps.png">
-        <img src="./src/assets/biceps.png" alt="Biceps" />
-        <span>Bíceps</span>
-      </div>
-      <div class="icon-box" data-src="leg-press.png">
-        <img src="./src/assets/leg-press.png" alt="Leg Press" />
-        <span>Perna</span>
-      </div>
-      <div class="icon-box" data-src="supino.png">
-        <img src="./src/assets/supino.png" alt="Supino" />
-        <span>Peito</span>
-      </div>
-    </div>
-  </dialog>
-  <!-- Modal Add Exercise to Routine -->
-  <dialog id="add-exercise-details-modal" class="modal">
-    <form id="add-exercise-details-form" class="modal-form">
-      <h3>Adicionar Exercício à Rotina</h3>
+        <!-- Screen 2 | List the Exercises for a Routine -->
+        <div id="screen-2" class="page">
+          <div id="exercise-list" class="exercise-list-container"></div>
+        </div>
 
-      <input type="hidden" id="add-exercise-routine-id" name="routineId">
+        <!-- Screen 3 | Show details for the Exercise selected -->
+        <div id="screen-3" class="page">
+          <div id="exercise-details" class="exercise-details-container"></div>
+        </div>
 
-      <div class="form-group">
-        <label>Filtrar por tipo:</label>
-        <div id="exercise-filter-buttons" class="filter-buttons">
-          <button type="button" class="filter-btn active" data-type="all">Todos</button>
-          <button type="button" class="filter-btn" data-type="Peito">Peito</button>
-          <button type="button" class="filter-btn" data-type="Costas">Costas</button>
-          <button type="button" class="filter-btn" data-type="Biceps">Biceps</button>
-          <button type="button" class="filter-btn" data-type="Triceps">Triceps</button>
-          <button type="button" class="filter-btn" data-type="Perna">Perna</button>
-          <button type="button" class="filter-btn" data-type="Ombro">Ombro</button>
+        <!-- Screen 4 | Create and Edit the Complete Exercises List -->
+        <div class="page" id="screen-4">
+          <form id="exercise-editor-form" class="exercise-form">
+            <h3>Novo Exercício</h3>
+            <input type="hidden" id="exercise-id" name="id" />
+            <div class="form-group">
+              <label for="exercise-description">Descrição:</label>
+              <input
+                type="text"
+                id="exercise-description"
+                name="description"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="exercise-type">Tipo (Grupo Muscular):</label>
+              <select name="type" id="exercise-type">
+                <option value="Peito">Peito</option>
+                <option value="Costas">Costas</option>
+                <option value="Biceps">Biceps</option>
+                <option value="Triceps">Triceps</option>
+                <option value="Perna">Perna</option>
+                <option value="Ombro">Ombro</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn">Salvar</button>
+              <button type="button" id="btn-cancel-edit" class="btn">
+                Cancelar
+              </button>
+            </div>
+          </form>
+          <hr />
+          <h2>Exercícios Salvos</h2>
+          <div id="exercise-editor-list"></div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="exercise-select">Exercício:</label>
-        <select id="exercise-select" name="exerciseId" required>
-          <option value="">Selecione um exercício...</option>
-        </select>
+      <!-- Screen 5 | Create a Exercise List to a Rotine -->
+      <div class="page" id="screen-5">
+        <h2>Selecione um Exercício</h2>
+        <div id="exercise-library-list"></div>
       </div>
 
-      <hr>
-      <div class="form-group">
-        <label for="add-exercise-sets">Séries:</label>
-        <input type="number" id="add-exercise-sets" name="targetSets" value="3" required>
-      </div>
-
-      <div class="form-group">
-        <label for="add-exercise-reps">Repetições (ex: 8-12):</label>
-        <input type="text" id="add-exercise-reps" name="targetReps" value="10" required>
-      </div>
-
-      <div class="form-group">
-        <label for="add-exercise-weight">Carga (kg):</label>
-        <input type="number" id="add-exercise-weight" name="targetWeight" value="20" required>
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" id="btn-cancel-add-exercise" class="btn">
-          Cancelar
+      <!-- Management Buttons -->
+      <div id="footer-buttons" class="footer-buttons">
+        <button id="btn-goto-exercise-editor" class="btn btn-confirm">
+          Gerenciar Exercícios
         </button>
-        <button type="submit" class="btn">
-          Adicionar à Rotina
-        </button>
+        <button id="reset" class="btn btn-delete">RESET</button>
       </div>
-    </form>
-  </dialog>
+    </main>
 
-  <!-- Modal Confirmation -->
-  <dialog id="confirm-modal" class="modal">
-  <div class="modal-form">
-    <div id="confirm-modal-prompt-view">
-      <h3 id="confirm-modal-title">Título</h3>
-      <p id="confirm-modal-message">Mensagem...</p>
-    </div>
-    <div id="confirm-modal-success-view" style="display: none;">
-      <div class="success-content">
-        <i data-lucide="check-circle" class="success-icon"></i>
-        <p id="confirm-modal-success-message">Ação concluída!</p>
+    <!-- Modal Dialog to Edit a Routine -->
+    <dialog id="edit-routine-modal" class="modal">
+      <form id="edit-routine-form" class="modal-form">
+        <h3>Editar Rotina</h3>
+        <input type="hidden" id="edit-routine-id" name="id" />
+        <div class="form-group">
+          <label for="edit-routine-title">Título:</label>
+          <input type="text" id="edit-routine-title" name="title" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-routine-description">Descrição:</label>
+          <input
+            type="text"
+            id="edit-routine-description"
+            name="description"
+            required
+          />
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-edit-routine" class="btn btn-cancel">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-confirm">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Modal Dialog to Change Icon -->
+    <dialog id="edit-icon-modal" class="modal">
+      <div class="icons-container">
+        <div class="icon-box" data-src="default.png">
+          <img src="./src/assets/default.png" alt="Default" />
+          <span>Default</span>
+        </div>
+        <div class="icon-box" data-src="biceps.png">
+          <img src="./src/assets/biceps.png" alt="Biceps" />
+          <span>Bíceps</span>
+        </div>
+        <div class="icon-box" data-src="leg-press.png">
+          <img src="./src/assets/leg-press.png" alt="Leg Press" />
+          <span>Perna</span>
+        </div>
+        <div class="icon-box" data-src="supino.png">
+          <img src="./src/assets/supino.png" alt="Supino" />
+          <span>Peito</span>
+        </div>
       </div>
-    </div>
-    <div id="confirm-modal-actions" class="modal-actions">
-      <button type="button" class="btn" data-action="cancel">
-        Cancelar
-      </button>
-      <button type="button" class="btn" data-action="confirm">
-        Confirmar
-      </button>
-    </div>
+    </dialog>
+
+    <!-- Modal Add Exercise to Routine -->
+    <dialog id="add-exercise-details-modal" class="modal">
+      <form id="add-exercise-details-form" class="modal-form">
+        <h3>Adicionar Exercício à Rotina</h3>
+
+        <input type="hidden" id="add-exercise-routine-id" name="routineId" />
+
+        <div class="form-group">
+          <label>Filtrar por tipo:</label>
+          <div id="exercise-filter-buttons" class="filter-buttons">
+            <button type="button" class="filter-btn active" data-type="all">
+              Todos
+            </button>
+            <button type="button" class="filter-btn" data-type="Peito">
+              Peito
+            </button>
+            <button type="button" class="filter-btn" data-type="Costas">
+              Costas
+            </button>
+            <button type="button" class="filter-btn" data-type="Biceps">
+              Biceps
+            </button>
+            <button type="button" class="filter-btn" data-type="Triceps">
+              Triceps
+            </button>
+            <button type="button" class="filter-btn" data-type="Perna">
+              Perna
+            </button>
+            <button type="button" class="filter-btn" data-type="Ombro">
+              Ombro
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="exercise-select">Exercício:</label>
+          <select id="exercise-select" name="exerciseId" required>
+            <option value="">Selecione um exercício...</option>
+          </select>
+        </div>
+
+        <hr />
+        <div class="form-group">
+          <label for="add-exercise-sets">Séries:</label>
+          <input
+            type="number"
+            id="add-exercise-sets"
+            name="targetSets"
+            value="3"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="add-exercise-reps">Repetições (ex: 8-12):</label>
+          <input
+            type="text"
+            id="add-exercise-reps"
+            name="targetReps"
+            value="10"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="add-exercise-weight">Carga (kg):</label>
+          <input
+            type="number"
+            id="add-exercise-weight"
+            name="targetWeight"
+            value="20"
+            required
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-add-exercise" class="btn">
+            Cancelar
+          </button>
+          <button type="submit" class="btn">Adicionar à Rotina</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Modal Confirmation -->
+    <dialog id="confirm-modal" class="modal">
+      <div class="modal-form">
+        <div id="confirm-modal-prompt-view">
+          <h3 id="confirm-modal-title">Título</h3>
+          <p id="confirm-modal-message">Mensagem...</p>
+        </div>
+        <div id="confirm-modal-success-view" style="display: none">
+          <div class="success-content">
+            <i data-lucide="check-circle" class="success-icon"></i>
+            <p id="confirm-modal-success-message">Ação concluída!</p>
+          </div>
+        </div>
+        <div id="confirm-modal-error-view" style="display: none;">
+          <div class="error-content">
+            <i data-lucide="alert-triangle" class="error-icon"></i>
+            <p id="confirm-modal-error-message">Ocorreu um erro.</p>
+          </div>
+        </div>
+        <div id="confirm-modal-actions" class="modal-actions">
+          <button type="button" class="btn btn-cancel" data-action="cancel">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-confirm" data-action="confirm">
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </dialog>
     
   </div>
 </dialog>
-
-</body>
-
+  </body>
 </html>

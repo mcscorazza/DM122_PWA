@@ -169,7 +169,6 @@ export default class GymLogService {
     }
   }
 
-
   // ##################################  
   //      Routines List Management
   // ##################################  
@@ -232,30 +231,30 @@ export default class GymLogService {
     try {
       await this.#db.transaction(
         'rw',
-        this.#db.routineExercises, 
-        this.#db.routineExerciseSets, 
+        this.#db.routineExercises,
+        this.#db.routineExerciseSets,
         async () => {
-        
-        const planData = {
-          routineId: planDetails.routineId,
-          exerciseId: planDetails.exerciseId,
-          targetSets: planDetails.targetSets,
-          targetReps: planDetails.targetReps,
-          targetWeight: planDetails.targetWeight,
-          isDone: false
-        };
-        const newPlanId = await this.#db.routineExercises.put(planData);
-        const setsToCreate = [];
-        for (let i = 0; i < planDetails.targetSets; i++) {
-          setsToCreate.push({
-            planId: newPlanId,
-            setNumber: i + 1,
+
+          const planData = {
+            routineId: planDetails.routineId,
+            exerciseId: planDetails.exerciseId,
+            targetSets: planDetails.targetSets,
+            targetReps: planDetails.targetReps,
+            targetWeight: planDetails.targetWeight,
             isDone: false
-          });
-        }
-        await this.#db.routineExerciseSets.bulkPut(setsToCreate);
-        console.log(`🚩 Exercício ${planDetails.exerciseId} adicionado ao plano ${newPlanId} com ${setsToCreate.length} sets.`);
-      });
+          };
+          const newPlanId = await this.#db.routineExercises.put(planData);
+          const setsToCreate = [];
+          for (let i = 0; i < planDetails.targetSets; i++) {
+            setsToCreate.push({
+              planId: newPlanId,
+              setNumber: i + 1,
+              isDone: false
+            });
+          }
+          await this.#db.routineExerciseSets.bulkPut(setsToCreate);
+          console.log(`🚩 Exercício ${planDetails.exerciseId} adicionado ao plano ${newPlanId} com ${setsToCreate.length} sets.`);
+        });
 
     } catch (error) {
       console.error("Erro ao adicionar exercício ao plano:", error);
@@ -269,13 +268,13 @@ export default class GymLogService {
         this.#db.routineExercises,
         this.#db.routineExerciseSets,
         async () => {
-        await this.#db.routineExerciseSets
-                      .where('planId')
-                      .equals(planId)
-                      .delete();
-                      
-        await this.#db.routineExercises.delete(planId);
-      });
+          await this.#db.routineExerciseSets
+            .where('planId')
+            .equals(planId)
+            .delete();
+
+          await this.#db.routineExercises.delete(planId);
+        });
       console.log(`🚩 Exercício do plano (ID: ${planId}) e seus sets foram deletados.`);
     } catch (error) {
       console.error("Erro ao deletar exercício do plano:", error);
@@ -289,6 +288,7 @@ export default class GymLogService {
   async getAllExercises() {
     return this.#db.exercises.toArray();
   }
+
   async saveExercise(exercise) {
     try {
       const savedId = await this.#db.exercises.put(exercise);
@@ -298,6 +298,7 @@ export default class GymLogService {
       console.error("Erro ao salvar exercício:", error);
     }
   }
+
   async deleteExercise(exerciseId) {
     try {
       await this.#db.exercises.delete(exerciseId);
@@ -306,5 +307,4 @@ export default class GymLogService {
       console.error("Erro ao deletar exercício:", error);
     }
   }
-
 }

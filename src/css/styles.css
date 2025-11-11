@@ -10,13 +10,31 @@
 
 :root {
   --background: #282c34;
+
+  --btn-background: #ffc621;
+  --btn-background-hover: #c99a0f;
+
   --primary-color: #eeeeee;
-  --danger-color: #b10606;
-  --danger-color-alpha: #b10606cc;
   --secondary-color: #ffc621;
-  --secondary-color-alpha: #ffc621cc;
+
+  --confirm-color: #154200;
+  --confirm-color-hover: #0e2c00;
+  --confirm-text: #e4ffd8;
+
+  --edit-color: #000f41;
+  --edit-color-hover: #000d38;
+  --edit-text: #88a4ff;
+
+  --cancel-color: #5e5e5e;
+  --cancel-color-hover: #424242;
+  --cancel-text: #aaaaaa;
+
+  --delete-color: #b10606;
+  --delete-color-hover: #690303;
+  --delete-text: #ffa4a4;
 
   --header-bg: #15171a;
+
   --card-bg: #16191f;
   --card-bg-inputs: #1f232c;
   --card-bg-hover: #1f232b;

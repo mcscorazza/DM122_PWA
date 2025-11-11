@@ -7,7 +7,7 @@ export default class HTMLService {
 
     this.imgLogoApp = document.getElementById('logo-app');
     this.btnEditRoutineList = document.getElementById('btn-new-routine');
-    this.btnEditExerciseList = document.getElementById('btn-exercise-list');
+    this.btnEditExerciseList = document.getElementById('btn-edit-exercise-list');
 
     this.pages = document.querySelectorAll('.page');
     this.footerButtons = document.getElementById('footer-buttons')
@@ -51,7 +51,9 @@ export default class HTMLService {
     this.confirmModalSuccessView = document.getElementById('confirm-modal-success-view');
     this.confirmModalSuccessMessage = document.getElementById('confirm-modal-success-message');
     this.confirmModalActions = document.getElementById('confirm-modal-actions');
-    this.confirmModalCallback = null; // (Isto você já tem)
+    this.confirmModalCallback = null;
+    this.confirmModalErrorView = document.getElementById('confirm-modal-error-view');
+    this.confirmModalErrorMessage = document.getElementById('confirm-modal-error-message');
 
     this.gymLogService = gymLogService;
     this.navigate('screen-1', 'Minhas Rotinas');
@@ -66,8 +68,7 @@ export default class HTMLService {
     });
 
     this.btnReset.addEventListener('click', async () => {
-      await this.gymLogService.resetWorkoutState();
-      this.navigate('screen-1', 'Minhas Rotinas');
+      this.#handleGeneralReset()
     });
 
     this.btnGotoExerciseEditor.addEventListener('click', () => {
@@ -83,6 +84,10 @@ export default class HTMLService {
     this.newRoutineButton.addEventListener('click', () => {
       this.#handleCreateRoutine();
     });
+
+    this.btnEditExerciseList.addEventListener('click', () => {
+      this.#handleEditRoutine(this.currentRoutineContext.id);
+    })
 
     this.btnCancelEdit.addEventListener('click', () => {
       this.#clearExerciseForm();
@@ -130,18 +135,6 @@ export default class HTMLService {
         this.confirmModalCallback = null;
       }
     });
-  }
-
-  async #handleSubmitEditIcon(iconSrc) {
-    if (!this.routineIdForIconEdit) {
-      console.error("Erro: ID da rotina não definido para edição de ícone.");
-      return;
-    }
-    const changes = { icon: iconSrc };
-    await this.gymLogService.updateRoutine(this.routineIdForIconEdit, changes);
-    this.editIconModal.close();
-    this.routineIdForIconEdit = null;
-    document.getElementById('icon-routine').src = `./src/assets/${iconSrc}`
   }
 
   // ##################################
@@ -230,7 +223,7 @@ export default class HTMLService {
   async #handleEditRoutine(routineId) {
     const routine = await this.gymLogService.getRoutineById(routineId);
     if (!routine) {
-      alert("Erro: Rotina não encontrada.");
+      this.#showErrorAlert("Erro: Rotina não encontrada.");
       return;
     }
 
@@ -248,17 +241,13 @@ export default class HTMLService {
       title: formData.get('title'),
       description: formData.get('description')
     };
-
     await this.gymLogService.updateRoutine(routineId, changes);
-
     this.headerTitle.textContent = changes.title;
     this.currentRoutineContext.title = changes.title;
     this.currentRoutineContext.description = changes.description;
-
     this.editRoutineModal.close();
-
+    this.#showSuccessAlert("Rotina atualizada!");
     this.#drawExerciseList();
-
   }
 
   async #handleDeleteRoutine(routineId, routineTitle) {
@@ -281,7 +270,7 @@ export default class HTMLService {
       } catch (error) {
         console.error("Erro ao deletar rotina:", error);
         this.confirmModal.close();
-        alert("Ocorreu um erro ao deletar a rotina.");
+        this.#showErrorAlert("Ocorreu um erro ao deletar a rotina. Tente novamente.");
         this.confirmModalCallback = null;
       }
     };
@@ -290,6 +279,55 @@ export default class HTMLService {
       `Tem certeza que deseja excluir a rotina "${routineTitle}"?`,
       deleteAction
     );
+  }
+
+  async #handleGeneralReset() {
+    const resetAction = async () => {
+      try {
+        this.confirmModalPromptView.style.display = 'none';
+        this.confirmModalActions.style.display = 'none';
+        await this.gymLogService.resetWorkoutState();
+        this.confirmModalSuccessMessage.textContent = 'Progresso de todos os treinos foi resetado!';
+        this.confirmModalSuccessView.style.display = 'block';
+        lucide.createIcons();
+        setTimeout(() => {
+          this.confirmModal.close();
+          this.confirmModalCallback = null;
+          this.navigate('screen-1', 'Minhas Rotinas');
+          this.#renderRoutines();
+          this.currentExercisePlan = [];
+          this.currentActiveExercise = null;
+          this.currentRoutineContext = null;
+        }, 2000);
+
+      } catch (error) {
+        console.error("Erro ao fazer o reset geral:", error);
+        this.confirmModal.close();
+        this.confirmModalCallback = null;
+        this.#showErrorAlert("Ocorreu um erro ao resetar o progresso.");
+      }
+    };
+    this.#showConfirmModal(
+      'Resetar Progresso',
+      'Isso irá resetar o progresso de TODOS os treinos. Deseja continuar?',
+      resetAction
+    );
+  }
+
+  async #handleSubmitEditIcon(iconSrc) {
+    if (!this.routineIdForIconEdit) {
+      console.error("Erro: ID da rotina não definido para edição de ícone.");
+      return;
+    }
+    const changes = { icon: iconSrc };
+    await this.gymLogService.updateRoutine(this.routineIdForIconEdit, changes);
+    this.editIconModal.close();
+    this.routineIdForIconEdit = null;
+    document.getElementById('icon-routine').src = `./src/assets/${iconSrc}`
+    if (this.currentRoutineContext) {
+      this.currentRoutineContext.icon = iconSrc;
+    }
+    this.#showSuccessAlert("Ícone atualizado com sucesso!");
   }
 
   // ##################################
@@ -458,7 +496,7 @@ export default class HTMLService {
     const formData = new FormData(this.addExerciseDetailsForm);
     const selectedExerciseId = parseInt(this.exerciseSelect.value, 10);
     if (!selectedExerciseId) {
-      alert("Por favor, selecione um exercício.");
+      this.#showErrorAlert("Por favor, selecione um exercício.");
       return;
     }
 
@@ -479,7 +517,6 @@ export default class HTMLService {
   // ##################################
   //     Exercises Details Mngmt
   // ##################################
-
   async #loadExerciseDetails(planId) {
     const plan = this.currentExercisePlan.find(ex => ex.planId === planId);
     const sets = await this.gymLogService.getSetsForExercise(planId);
@@ -538,7 +575,7 @@ export default class HTMLService {
 
 
     const deleteButton = document.createElement('button');
-    deleteButton.className = 'btn btn-delete-from-plan';
+    deleteButton.className = 'btn btn-delete';
     deleteButton.textContent = 'Excluir Exercício da Rotina';
     deleteButton.addEventListener('click', () => {
       this.#handleDeleteExerciseFromPlan(plan.planId, plan.description);
@@ -574,7 +611,7 @@ export default class HTMLService {
         console.error("Erro ao deletar exercício do plano:", error);
         this.confirmModal.close();
         this.confirmModalCallback = null;
-        alert("Ocorreu um erro ao remover o exercício.");
+        this.#showErrorAlert("Ocorreu um erro ao remover o exercício.");
       }
     };
 
@@ -633,18 +670,17 @@ export default class HTMLService {
         <span>(Tipo: ${ex.type} | ID: ${ex.id})</span>
       </div>
       <div class="item-actions">
-        <button class="btn-edit" data-id="${ex.id}">
-          <i data-lucide="square-pen" class="btn-edit-exercise"></i>
+        <button class="btn-edit btn-mini" data-id="${ex.id}">
+          <i data-lucide="square-pen"></i>
         </button>
-        <button class="btn-delete" data-id="${ex.id}">
-          <i data-lucide="trash" class="btn-delete-exercise"></i>
+        <button class="btn-delete btn-mini" data-id="${ex.id}">
+          <i data-lucide="trash"></i>
         </button>
       </div>
     `;
 
       item.querySelector('.btn-delete').addEventListener('click', async () => {
-        await this.gymLogService.deleteExercise(ex.id);
-        this.#loadExerciseEditor();
+        this.#handleDeleteExercise(ex);
       });
 
       item.querySelector('.btn-edit').addEventListener('click', () => {
@@ -679,6 +715,36 @@ export default class HTMLService {
     this.#loadExerciseEditor();
   }
 
+  async #handleDeleteExercise(exercise) {
+    const { id, description } = exercise;
+    const deleteAction = async () => {
+      try {
+        this.confirmModalPromptView.style.display = 'none';
+        this.confirmModalActions.style.display = 'none';
+        await this.gymLogService.deleteExercise(id);
+        this.confirmModalSuccessMessage.textContent = `Exercício "${description}" deletado!`;
+        this.confirmModalSuccessView.style.display = 'block';
+        lucide.createIcons();
+        setTimeout(() => {
+          this.confirmModal.close();
+          this.confirmModalCallback = null;
+          this.#loadExerciseEditor();
+        }, 2000);
+
+      } catch (error) {
+        console.error("Erro ao deletar exercício:", error);
+        this.#showErrorAlert("Ocorreu um erro ao deletar o exercício.");
+        this.confirmModalCallback = null;
+      }
+    };
+
+    this.#showConfirmModal(
+      `Excluir Exercício`,
+      `Tem certeza que deseja excluir "${description}" da biblioteca?`,
+      deleteAction
+    );
+  }
+
   #clearExerciseForm() {
     this.exerciseEditorForm.querySelector('h3').textContent = 'Novo Exercício';
     this.exerciseEditorForm.reset();
@@ -706,10 +772,42 @@ export default class HTMLService {
     this.confirmModalTitle.textContent = title;
     this.confirmModalMessage.textContent = message;
     this.confirmModalCallback = onConfirm;
+    this.confirmModalErrorView.style.display = 'none';
 
-    this.confirmModalPromptView.style.display = 'block';
     this.confirmModalActions.style.display = 'flex';
+    this.confirmModalPromptView.style.display = 'block';
     this.confirmModalSuccessView.style.display = 'none';
+
+    this.confirmModal.querySelector('[data-action="confirm"]').style.display = 'block';
+    this.confirmModal.querySelector('[data-action="cancel"]').textContent = 'Cancelar';
     this.confirmModal.showModal();
+  }
+
+  #showSuccessAlert(message) {
+    this.confirmModalPromptView.style.display = 'none';
+    this.confirmModalActions.style.display = 'none';
+    this.confirmModalSuccessMessage.textContent = message;
+    this.confirmModalSuccessView.style.display = 'block';
+    lucide.createIcons();
+    this.confirmModal.showModal();
+    setTimeout(() => {
+      this.confirmModal.close();
+    }, 2000);
+  }
+
+  #showErrorAlert(message) {
+    this.confirmModalPromptView.style.display = 'none';
+    this.confirmModalSuccessView.style.display = 'none';
+    this.confirmModalErrorMessage.textContent = message;
+    this.confirmModalErrorView.style.display = 'block';
+    lucide.createIcons();
+    const confirmBtn = this.confirmModal.querySelector('[data-action="confirm"]');
+    confirmBtn.style.display = 'none';
+    const cancelBtn = this.confirmModal.querySelector('[data-action="cancel"]');
+    cancelBtn.textContent = 'Fechar';
+    this.confirmModalActions.style.display = 'flex';
+    if (!this.confirmModal.open) {
+      this.confirmModal.showModal();
+    }
   }
 }
