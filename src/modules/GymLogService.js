@@ -294,7 +294,7 @@ export default class GymLogService {
             .equals(planId)
             .delete();
 
-          await this.#db.routineExercises.delete(planId);
+          await this.#db.routineWorkouts.delete(planId);
         });
       console.log(`🚩 Exercício do plano (ID: ${planId}) e seus sets foram deletados.`);
     } catch (error) {
