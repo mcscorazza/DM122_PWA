@@ -8,21 +8,27 @@ Parte da Pós-Graduação em **Cloud Computing e Desenvolvimento Mobile**.
 
 O site está hospedado e pode ser acessado publicamente através do link abaixo, utilizando o GitHub Pages:
 
-**🔗 Acessar o site:** **[[https://github.com/mcscorazza/DM122_PWA](https://github.com/mcscorazza/DM122_PWA)]**
+**🔗 Acessar o site:** **[[https://mcscorazza.github.io/DM122_PWA/](https://mcscorazza.github.io/DM122_PWA/)]**
 
 
 ## 📝 Sobre o Projeto
 
-Este projeto é um Progressive Web App (PWA) completo, focado em ser um diário de treino de musculação (Gym Log). 
+Este projeto é um Progressive Web App (PWA) completo, focado em ser um diário de treino de musculação (GymLog). 
 O objetivo é criar uma aplicação robusta que permita ao usuário gerenciar suas rotinas, catalogar exercícios e acompanhar seu progresso de treino, 
 com foco total no funcionamento offline.
 A aplicação é construída utilizando "Vanilla Stack" (HTML, CSS e JavaScript puros), sem frameworks, para demonstrar o domínio das Web APIs modernas, 
 como Service Workers e IndexedDB.
 
-## 📱Telas Principais 
-Tela de Rotinas (Screen-1)
-Tela de Treino (Screen-2)
-Editor de Exercícios (Screen-4)
+## 📱 Telas Principais 
+- Tela de Rotinas (Screen-1)
+- Tela de Treino (Screen-2)
+- Detalhes do Exercício (Screen-3)
+- Editor da Bilioteca de Exercícios (Screen-4)
+- Dialog para Editar Rotina (Modal-1)
+- Dialog para Alterar Icone da Rotina (Modal-2)
+- Dialog para Adicionar Exercício à Rotina (Modal-3)
+- Dialog para Prompts de Confirmação e Mensagens (Modal-4)
+
 
 ## ✨ Funcionalidades
 O aplicativo permite ao usuário gerenciar seu ciclo de treino completo:
