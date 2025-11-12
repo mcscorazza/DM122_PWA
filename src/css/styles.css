@@ -19,6 +19,7 @@
   --primary-color: #eeeeee;
   --subtitle-color: #666666;
   --secondary-color: #ffc621;
+  --button-color: var(--card-bg);
 
   --confirm-color: #154200;
   --confirm-color-hover: #0e2c00;

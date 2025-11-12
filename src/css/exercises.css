@@ -125,12 +125,14 @@
 
     &:hover {
       background-color: var(--primary-color);
+      color: var(--button-color);
     }
 
-    .active {
-      background-color: var(--secondary-color);
-      color: var(--card-bg);
-      border-color: var(--primary-color);
-    }
+  }
+
+  .active {
+    background-color: var(--secondary-color);
+    color: var(--button-color);
+    border-color: var(--button-color);
   }
 }
