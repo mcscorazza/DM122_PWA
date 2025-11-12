@@ -33,7 +33,6 @@
       </button>
     </div>
   </header>
-
   <!-- Main body for the screens and buttons -->
   <main id="app-container" class="main-container">
     <div class="main-content-wrapper">
@@ -73,27 +72,26 @@
             </select>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn">Salvar</button>
-            <button type="button" id="btn-cancel-edit" class="btn">
+            <button type="button" id="btn-cancel-edit" class="btn btn-cancel">
               Cancelar
             </button>
+            <button type="submit" class="btn btn-confirm">Salvar</button>
           </div>
         </form>
-        <hr />
-        <h2>Exercícios Salvos</h2>
-        <div id="exercise-editor-list"></div>
+        <hr class="exercise-divider" />
+        <h2 class="exercise-list-title">Exercícios Salvos</h2>
+        <div id="exercise-editor-list" class="exercise-list"></div>
       </div>
     </div>
-
     <!-- Management Buttons -->
-    <div id="footer-buttons" class="footer-buttons">
-      <button id="btn-goto-exercise-editor" class="btn btn-confirm">
+    <div id="footer-buttons" class="main-footer-buttons">
+      <button id="btn-goto-exercise-editor" class="btn btn-edit">
+        
         Gerenciar Exercícios
       </button>
       <button id="reset" class="btn btn-delete">RESET</button>
     </div>
   </main>
-
   <!-- Modal 1 Dialog to Edit a Routine -->
   <dialog id="edit-routine-modal" class="modal">
     <form id="edit-routine-form" class="modal-form">
@@ -115,7 +113,6 @@
       </div>
     </form>
   </dialog>
-
   <!-- Modal 2 Dialog to Change Icon -->
   <dialog id="edit-icon-modal" class="modal">
     <div class="icons-container">
@@ -137,16 +134,13 @@
       </div>
     </div>
   </dialog>
-
   <!-- Modal 3 Add Exercise to Routine -->
-  <dialog id="add-exercise-details-modal" class="modal">
-    <form id="add-exercise-details-form" class="modal-form">
+  <dialog id="_add-workout-details-modal" class="modal">
+    <form id="_add-workout-details-form" class="modal-form">
       <h3>Adicionar Exercício à Rotina</h3>
-
-      <input type="hidden" id="add-exercise-routine-id" name="routineId" />
-
+      <input type="hidden" id="_add-workout-routine-id" name="routineId" />
       <div class="form-group">
-        <label>Filtrar por tipo:</label>
+        <p>Filtrar por tipo:</p>
         <div id="exercise-filter-buttons" class="filter-buttons">
           <button type="button" class="filter-btn active" data-type="all">
             Todos
@@ -184,29 +178,28 @@
 
       <hr />
       <div class="form-group">
-        <label for="add-exercise-sets">Séries:</label>
-        <input type="number" id="add-exercise-sets" name="targetSets" value="3" required />
+        <label for="_add-workout-sets">Séries:</label>
+        <input type="number" id="_add-workout-sets" name="targetSets" value="3" required />
       </div>
 
       <div class="form-group">
-        <label for="add-exercise-reps">Repetições (ex: 8-12):</label>
-        <input type="text" id="add-exercise-reps" name="targetReps" value="10" required />
+        <label for="_add-workout-reps">Repetições (ex: 8-12):</label>
+        <input type="text" id="_add-workout-reps" name="targetReps" value="10" required />
       </div>
 
       <div class="form-group">
-        <label for="add-exercise-weight">Carga (kg):</label>
-        <input type="number" id="add-exercise-weight" name="targetWeight" value="20" required />
+        <label for="_add-workout-weight">Carga (kg):</label>
+        <input type="number" id="_add-workout-weight" name="targetWeight" value="20" required />
       </div>
 
       <div class="modal-actions">
-        <button type="button" id="btn-cancel-add-exercise" class="btn btn-cancel">
+        <button type="button" id="btn-cancel-add-workout" class="btn btn-cancel">
           Cancelar
         </button>
         <button type="submit" class="btn btn-confirm">Adicionar</button>
       </div>
     </form>
   </dialog>
-
   <!-- Modal 4 Confirmation -->
   <dialog id="confirm-modal" class="modal">
     <div class="modal-form">
@@ -236,7 +229,6 @@
       </div>
     </div>
   </dialog>
-
   </div>
   </dialog>
 </body>

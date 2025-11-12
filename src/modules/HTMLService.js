@@ -44,11 +44,11 @@ export default class HTMLService {
     this.routineIdForIconEdit = null;
 
     // MODAL Management Exercises Elements
-    this.addExerciseDetailsModal = document.getElementById('add-exercise-details-modal');
-    this.addExerciseDetailsForm = document.getElementById('add-exercise-details-form');
-    this.btnCancelAddExercise = document.getElementById('btn-cancel-add-exercise');
+    this.addWorkoutDetailsModal = document.getElementById('_add-workout-details-modal');
+    this.addWorkoutDetailsForm = document.getElementById('_add-workout-details-form');
+    this.btnCancelAddExercise = document.getElementById('btn-cancel-add-workout');
     this.exerciseFilterButtons = document.getElementById('exercise-filter-buttons');
-    this.exerciseSelect = document.getElementById('exercise-select');
+    this.workoutSelect = document.getElementById('exercise-select');
     this.exerciseLibraryCache = [];
 
     // MODAL Confirmation Elements
@@ -59,9 +59,9 @@ export default class HTMLService {
     this.confirmModalSuccessView = document.getElementById('confirm-modal-success-view');
     this.confirmModalSuccessMessage = document.getElementById('confirm-modal-success-message');
     this.confirmModalActions = document.getElementById('confirm-modal-actions');
-    this.confirmModalCallback = null;
     this.confirmModalErrorView = document.getElementById('confirm-modal-error-view');
     this.confirmModalErrorMessage = document.getElementById('confirm-modal-error-message');
+    this.confirmModalCallback = null;
 
     // Header Back Btn Event
     this.btnBack.addEventListener('click', () => {
@@ -90,11 +90,12 @@ export default class HTMLService {
       this.#handleCreateRoutine();
     });
 
-
+    // Edit Workout List Event
     this.btnEditWorkoutList.addEventListener('click', () => {
       this.#handleEditRoutine(this.currentRoutineContext.id);
     })
 
+    // Cancel Edit Button Event
     this.btnCancelEdit.addEventListener('click', () => {
       this.#clearExerciseForm();
     });
@@ -110,15 +111,15 @@ export default class HTMLService {
       this.editRoutineModal.close();
     });
 
-    // Add Exercise Save Btn Event
-    this.addExerciseDetailsForm.addEventListener('submit', (event) => {
+    // Add Workout Save Btn Event
+    this.addWorkoutDetailsForm.addEventListener('submit', (event) => {
       event.preventDefault();
-      this.#handleSubmitAddExercise();
+      this.#handleSubmitAddWorkout();
     });
 
     // Add Exercise Cancel Btn Event
     this.btnCancelAddExercise.addEventListener('click', () => {
-      this.addExerciseDetailsModal.close();
+      this.addWorkoutDetailsModal.close();
     });
 
     // Filter Buttons Event
@@ -133,7 +134,7 @@ export default class HTMLService {
       if (!clickedContainer) return;
       const newIconSrc = clickedContainer.dataset.src;
       this.#handleSubmitEditIcon(newIconSrc);
-      this.#drawExerciseList();
+      this.#drawWorkoutList();
     });
 
     // Generic Confirm Modal Handler
@@ -191,9 +192,9 @@ export default class HTMLService {
     }
   }
 
-  // ##################################
-  //     Routines Load and Draw
-  // ##################################
+  // ###########################################
+  //     Routines Load and Draw - Screen 1
+  // ###########################################
 
   async #renderRoutines() {
     const routines = await this.gymLogService.getAllRoutines();
@@ -204,12 +205,12 @@ export default class HTMLService {
       routineCard.className = 'routine-card';
       routineCard.innerHTML = `
         <div class="routine-card-main-content">
-          <img src="./src/assets/${routine.icon}" alt="${routine.title}">
+          <img class="routine-icon-image" src="./src/assets/${routine.icon}" alt="${routine.title}">
           <div class="routine-card-content">
             <h3 class="routine-card-title">${routine.title}</h3>
             <p class="routine-card-subtitle">${routine.description}</p>
           </div>
-          <i data-lucide="chevron-right" class="routine-btn"></i>
+          <i data-lucide="chevron-right" class="routine-icon"></i>
         </div>
         `;
       routineCard.querySelector('.routine-card-main-content').addEventListener('click', () => {
@@ -220,7 +221,7 @@ export default class HTMLService {
           icon: routine.icon
         };
         this.navigate('screen-2', routine.title, routine.id);
-        this.#loadExercises(routine.id);
+        this.#loadWorkouts(routine.id);
       });
 
       this.routineListContainer.appendChild(routineCard);
@@ -265,7 +266,7 @@ export default class HTMLService {
     this.currentRoutineContext.description = changes.description;
     this.editRoutineModal.close();
     this.#showSuccessAlert("Rotina atualizada!");
-    this.#drawExerciseList();
+    this.#drawWorkoutList();
   }
 
   async #handleDeleteRoutine(routineId, routineTitle) {
@@ -313,8 +314,8 @@ export default class HTMLService {
           this.confirmModalCallback = null;
           this.navigate('screen-1', 'Minhas Rotinas');
           this.#renderRoutines();
-          this.currentExercisePlan = [];
-          this.currentActiveExercise = null;
+          this.currentWorkoutPlan = [];
+          this.currentActiveWorkout = null;
           this.currentRoutineContext = null;
         }, 2000);
 
@@ -341,116 +342,115 @@ export default class HTMLService {
     await this.gymLogService.updateRoutine(this.routineIdForIconEdit, changes);
     this.editIconModal.close();
     this.routineIdForIconEdit = null;
-    document.getElementById('icon-routine').src = `./src/assets/${iconSrc}`
+    document.getElementById('workout-icon-routine').src = `./src/assets/${iconSrc}`
     if (this.currentRoutineContext) {
       this.currentRoutineContext.icon = iconSrc;
     }
     this.#showSuccessAlert("Ícone atualizado com sucesso!");
   }
 
-  // ##################################
-  //     Exercises Load and Draw
-  // ##################################
+  // #########################################
+  //     Workout Load and Draw - Screen 2
+  // #########################################
 
-  async #loadExercises(routineId) {
-    const exercisesFromDB = await this.gymLogService.getExercicesByRoutineId(routineId);
-
-    this.currentExercisePlan = exercisesFromDB.map(exercise => {
+  async #loadWorkouts(routineId) {
+    const workoutsFromDB = await this.gymLogService.getWorkoutsByRoutineId(routineId);
+    this.currentWorkoutPlan = workoutsFromDB.map(workout => {
       return {
-        ...exercise
+        ...workout
       };
     });
-    this.#drawExerciseList();
+    this.#drawWorkoutList();
   }
 
-  #drawExerciseList() {
+  #drawWorkoutList() {
     this.workoutListContainer.innerHTML = '';
     const routineDecription = document.createElement('div');
-    routineDecription.className = 'routine-description';
+    routineDecription.className = 'workout-routine-description';
     routineDecription.innerHTML = `
-      <img id="icon-routine" src="./src/assets/${this.currentRoutineContext.icon}" alt="${this.currentRoutineContext.title}">
+      <img id="workout-icon-routine" src="./src/assets/${this.currentRoutineContext.icon}" alt="${this.currentRoutineContext.title}">
       <h2>${this.currentRoutineContext.description}</h2>
       `;
-    routineDecription.querySelector('#icon-routine').addEventListener('click', () => {
+    routineDecription.querySelector('#workout-icon-routine').addEventListener('click', () => {
       this.routineIdForIconEdit = this.currentRoutineContext.id;
       this.editIconModal.showModal();
     })
 
     this.workoutListContainer.appendChild(routineDecription);
 
-    if (!this.currentExercisePlan || this.currentExercisePlan.length === 0) {
+    if (!this.currentWorkoutPlan || this.currentWorkoutPlan.length === 0) {
       const emptyStateDiv = document.createElement('div');
       emptyStateDiv.className = 'empty-state-container';
       emptyStateDiv.innerHTML = `<p class="empty-list-message">Nenhum exercício cadastrado nesta rotina.</p>`;
       this.workoutListContainer.appendChild(emptyStateDiv);
     } else {
-      const groupedExercises = new Map();
-      this.currentExercisePlan.forEach(exercise => {
-        const type = exercise.type || 'Outros';
-        if (!groupedExercises.has(type)) {
-          groupedExercises.set(type, []);
+      const groupedWorkouts = new Map();
+      this.currentWorkoutPlan.forEach(workout => {
+        const type = workout.type || 'Outros';
+        if (!groupedWorkouts.has(type)) {
+          groupedWorkouts.set(type, []);
         }
-        groupedExercises.get(type).push(exercise);
+        groupedWorkouts.get(type).push(workout);
       });
 
-      groupedExercises.forEach((exercisesInGroup, type) => {
+      groupedWorkouts.forEach((workoutsInGroup, type) => {
 
         const titleEl = document.createElement('h2');
-        titleEl.className = 'exercise-group-title';
+        titleEl.className = 'workout-group-title';
         titleEl.textContent = type;
         this.workoutListContainer.appendChild(titleEl);
 
         const hrEl = document.createElement('hr');
-        hrEl.className = 'exercise-group-divider';
+        hrEl.className = 'workout-group-divider';
         this.workoutListContainer.appendChild(hrEl);
 
-        exercisesInGroup.forEach(exercise => {
-          const exerciseCard = document.createElement('div');
-          const iconName = exercise.isDone ? 'check-square-2' : 'square';
-          const cardClasses = exercise.isDone ? 'exercise-card done' : 'exercise-card';
-          const titleClasses = exercise.isDone ? 'exercise-card-title done' : 'exercise-card-title';
+        workoutsInGroup.forEach(workout => {
+          const workoutCard = document.createElement('div');
+          const iconName = workout.isDone ? 'check-square-2' : 'square';
+          const cardClasses = workout.isDone ? 'workout-card done' : 'workout-card';
+          const titleClasses = workout.isDone ? 'workout-card-title done' : 'workout-card-title';
 
-          exerciseCard.className = cardClasses;
+          workoutCard.className = cardClasses;
 
-          exerciseCard.innerHTML = `
-          <i data-lucide="${iconName}" class="exercise-check-icon"></i>
-          <div class="exercise-card-content">
-            <h3 class="${titleClasses}">${exercise.description}</h3>
+          workoutCard.innerHTML = `
+          <i data-lucide="${iconName}" class="workout-check-icon"></i>
+          <div class="workout-card-content">
+            <h3 class="${titleClasses}">${workout.description}</h3>
           </div>
-          <i data-lucide="chevron-right" class="exercise-btn"></i>
+          <i data-lucide="chevron-right" class="workout-btn"></i>
         `;
 
-          exerciseCard.addEventListener('click', () => {
-            this.#loadExerciseDetails(exercise.planId);
+          workoutCard.addEventListener('click', () => {
+            this.#loadWorkoutDetails(workout.planId);
             this.navigate('screen-3', this.currentRoutineContext.title);
           });
 
-          this.workoutListContainer.appendChild(exerciseCard);
+          this.workoutListContainer.appendChild(workoutCard);
         });
       });
     }
 
-    const addExercisesDiv = document.createElement('div');
-    addExercisesDiv.className = 'add-new-exercises';
-    addExercisesDiv.innerHTML = `
-      <button class="btn" id="btn-add-exercise-to-routine">
+    const addWorkoutsDiv = document.createElement('div');
+    addWorkoutsDiv.className = 'add-new-workout';
+    addWorkoutsDiv.innerHTML = `
+      <button class="btn" id="btn-add-workout-to-routine">
         <i data-lucide="plus"></i> Adicionar Exercício
       </button>
     `;
-    this.workoutListContainer.appendChild(addExercisesDiv);
+    this.workoutListContainer.appendChild(addWorkoutsDiv);
 
 
-    this.workoutListContainer.querySelector('#btn-add-exercise-to-routine').addEventListener('click', () => {
-      this.#openAddExerciseModal();
+    this.workoutListContainer.querySelector('#btn-add-workout-to-routine').addEventListener('click', () => {
+      this.#openAddWorkoutModal();
     });
 
     const routineActionsDiv = document.createElement('div');
     routineActionsDiv.className = 'routine-actions-container';
     routineActionsDiv.innerHTML = `
-    <button class="btn-icon btn-edit-routine" id="btn-edit-current-routine">
+    <button class="btn btn-edit" id="btn-edit-current-routine">
       <i data-lucide="edit-3"></i> Editar Rotina
     </button>
-    <button class="btn-icon btn-delete-routine" id="btn-delete-current-routine">
+    <button class="btn btn-delete" id="btn-delete-current-routine">
       <i data-lucide="trash-2"></i> Excluir Rotina
     </button>
     `;
@@ -467,35 +467,35 @@ export default class HTMLService {
     lucide.createIcons();
   }
 
-  async #openAddExerciseModal() {
+  async #openAddWorkoutModal() {
     this.exerciseLibraryCache = await this.gymLogService.getAllExercises();
-    this.#populateExerciseSelect('all');
+    this.#populateWorkoutSelect('all');
     this.#updateFilterButtons('all');
-    this.addExerciseDetailsForm.querySelector('#add-exercise-routine-id').value = this.currentRoutineContext.id;
-    this.addExerciseDetailsModal.showModal();
+    this.addWorkoutDetailsForm.querySelector('#_add-workout-routine-id').value = this.currentRoutineContext.id;
+    this.addWorkoutDetailsModal.showModal();
   }
 
   #handleFilterClick(event) {
     const filterType = event.target.dataset.type;
     this.#updateFilterButtons(filterType);
-    this.#populateExerciseSelect(filterType);
+    this.#populateWorkoutSelect(filterType);
   }
 
-  #populateExerciseSelect(filterType) {
-    this.exerciseSelect.innerHTML = '';
+  #populateWorkoutSelect(filterType) {
+    this.workoutSelect.innerHTML = '';
     const filteredList = this.exerciseLibraryCache.filter(ex => {
       return filterType === 'all' || ex.type === filterType;
     });
 
     if (filteredList.length === 0) {
-      this.exerciseSelect.innerHTML = '<option value="">Nenhum exercício encontrado</option>';
+      this.workoutSelect.innerHTML = '<option value="">Nenhum exercício encontrado</option>';
       return;
     }
     filteredList.forEach(ex => {
       const option = document.createElement('option');
       option.value = ex.id;
       option.textContent = ex.description;
-      this.exerciseSelect.appendChild(option);
+      this.workoutSelect.appendChild(option);
     });
   }
 
@@ -510,54 +510,54 @@ export default class HTMLService {
     });
   }
 
-  async #handleSubmitAddExercise() {
-    const formData = new FormData(this.addExerciseDetailsForm);
-    const selectedExerciseId = parseInt(this.exerciseSelect.value, 10);
-    if (!selectedExerciseId) {
+  async #handleSubmitAddWorkout() {
+    const formData = new FormData(this.addWorkoutDetailsForm);
+    const selectedWorkoutId = parseInt(this.workoutSelect.value, 10);
+    if (!selectedWorkoutId) {
       this.#showErrorAlert("Por favor, selecione um exercício.");
       return;
     }
 
     const planDetails = {
       routineId: parseInt(formData.get('routineId'), 10),
-      exerciseId: selectedExerciseId,
+      workoutId: selectedWorkoutId,
       targetSets: parseInt(formData.get('targetSets'), 10),
       targetReps: formData.get('targetReps'),
       targetWeight: parseFloat(formData.get('targetWeight'))
     };
 
-    await this.gymLogService.addExerciseToRoutinePlan(planDetails);
-    this.addExerciseDetailsModal.close();
+    await this.gymLogService.addWorkoutToRoutinePlan(planDetails);
+    this.addWorkoutDetailsModal.close();
     this.navigate('screen-2', this.currentRoutineContext.title);
-    this.#loadExercises(this.currentRoutineContext.id);
+    this.#loadWorkouts(this.currentRoutineContext.id);
   }
 
-  // ##################################
-  //     Exercises Details Mngmt
-  // ##################################
-  async #loadExerciseDetails(planId) {
-    const plan = this.currentExercisePlan.find(ex => ex.planId === planId);
-    const sets = await this.gymLogService.getSetsForExercise(planId);
+  // #######################################
+  //     Workout Details Mngmt - Screen 3
+  // #######################################
+  async #loadWorkoutDetails(planId) {
+    const plan = this.currentWorkoutPlan.find(wk => wk.planId === planId);
+    const sets = await this.gymLogService.getSetsForWorkout(planId);
 
-    this.currentActiveExercise = {
+    this.currentActiveWorkout = {
       plan: plan,
       sets: sets
     };
 
-    this.#drawExerciseDetails();
+    this.#drawWorkoutDetails();
   }
 
-  #drawExerciseDetails() {
-    if (!this.currentActiveExercise) return;
+  #drawWorkoutDetails() {
+    if (!this.currentActiveWorkout) return;
 
-    const { plan, sets } = this.currentActiveExercise;
+    const { plan, sets } = this.currentActiveWorkout;
     this.workoutDetailsContainer.innerHTML = '';
 
-    const exerciseTitle = document.createElement('h1');
-    exerciseTitle.className = 'exercise-detail-title';
-    exerciseTitle.innerText = plan.description;
+    const workoutTitle = document.createElement('h1');
+    workoutTitle.className = 'workout-detail-title';
+    workoutTitle.innerText = plan.description;
 
-    this.workoutDetailsContainer.appendChild(exerciseTitle);
+    this.workoutDetailsContainer.appendChild(workoutTitle);
 
     sets.forEach(set => {
       const setCard = document.createElement('div');
@@ -573,8 +573,6 @@ export default class HTMLService {
         <i data-lucide="${iconName}"></i>
         </button>
         `;
-
-
       setCard.querySelector('.btn-check-set').addEventListener('click', () => {
         this.#handleSetCheck(set.id);
       });
@@ -587,7 +585,7 @@ export default class HTMLService {
     finishButton.textContent = 'Finalizar Exercício';
 
     finishButton.addEventListener('click', () => {
-      this.#handleFinishExercise(plan.planId);
+      this.#handleFinishWorkout(plan.planId);
     });
     this.workoutDetailsContainer.appendChild(finishButton);
 
@@ -596,29 +594,30 @@ export default class HTMLService {
     deleteButton.className = 'btn btn-delete';
     deleteButton.textContent = 'Excluir Exercício da Rotina';
     deleteButton.addEventListener('click', () => {
-      this.#handleDeleteExerciseFromPlan(plan.planId, plan.description);
+      this.#handleDeleteWorkoutFromPlan(plan.planId, plan.description);
     });
     this.workoutDetailsContainer.appendChild(deleteButton);
 
     lucide.createIcons();
   }
 
-  async #handleDeleteExerciseFromPlan(planId, exerciseDescription) {
+  async #handleDeleteWorkoutFromPlan(planId, workoutDescription) {
     const deleteAction = async () => {
       try {
 
         this.confirmModalPromptView.style.display = 'none';
         this.confirmModalActions.style.display = 'none';
-        await this.gymLogService.deleteExerciseFromPlan(planId);
-        this.confirmModalSuccessMessage.textContent = `Exercício "${exerciseDescription}" removido!`;
+        await this.gymLogService.deleteWorkoutFromPlan(planId);
+        this.confirmModalSuccessMessage.textContent = `Exercício "${workoutDescription}" removido!`;
         this.confirmModalSuccessView.style.display = 'block';
         lucide.createIcons();
+
         setTimeout(() => {
           this.confirmModal.close();
           this.confirmModalCallback = null;
           if (this.currentRoutineContext) {
             this.navigate('screen-2', this.currentRoutineContext.title);
-            this.#loadExercises(this.currentRoutineContext.id); // Recarrega a screen-2
+            this.#loadWorkouts(this.currentRoutineContext.id);
           } else {
             this.navigate('screen-1', 'Minhas Rotinas');
             this.#renderRoutines();
@@ -635,13 +634,13 @@ export default class HTMLService {
 
     this.#showConfirmModal(
       `Excluir Exercício`,
-      `Tem certeza que deseja excluir "${exerciseDescription}" desta rotina?`,
+      `Tem certeza que deseja excluir "${workoutDescription}" desta rotina?`,
       deleteAction
     );
   }
 
   async #handleSetCheck(setId) {
-    const set = this.currentActiveExercise.sets.find(s => s.id === setId);
+    const set = this.currentActiveWorkout.sets.find(s => s.id === setId);
     if (!set) return;
 
     const newIsDone = !set.isDone;
@@ -649,16 +648,16 @@ export default class HTMLService {
     try {
       await this.gymLogService.updateSetState(setId, newIsDone);
       set.isDone = newIsDone;
-      this.#drawExerciseDetails();
+      this.#drawWorkoutDetails();
 
     } catch (error) {
       console.error("Erro ao atualizar o set:", error);
     }
   }
 
-  async #handleFinishExercise(planId) {
+  async #handleFinishWorkout(planId) {
     try {
-      await this.gymLogService.updateExerciseState(planId, true);
+      await this.gymLogService.updateWorkoutState(planId, true);
       this.#handleGoBack();
 
     } catch (error) {
@@ -666,9 +665,9 @@ export default class HTMLService {
     }
   }
 
-  // ##################################
-  //     Exercise List Manager
-  // ##################################
+  // #######################################
+  //     Exercise List Manager - Screen 4
+  // #######################################
 
   async #loadExerciseEditor() {
     const exercises = await this.gymLogService.getAllExercises();
@@ -777,7 +776,7 @@ export default class HTMLService {
     else if (this.currentPageId === 'screen-3') {
       if (this.currentRoutineContext) {
         this.navigate('screen-2', this.currentRoutineContext.title, this.currentRoutineContext.id);
-        this.#loadExercises(this.currentRoutineContext.id);
+        this.#loadWorkouts(this.currentRoutineContext.id);
       } else {
         console.error("Contexto da rotina perdido. Voltando para o início.");
         this.navigate('screen-1', 'Minhas Rotinas');

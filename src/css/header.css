@@ -16,35 +16,35 @@
     align-items: center;
     max-width: 800px;
     width: 100%;
+
+    .header-img {
+      width: 50px;
+      margin-left: 8px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+    }
+
+    .header-btn {
+      width: 55px;
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      cursor: pointer;
+
+      .edit-btn {
+        width: 32px;
+        height: 32px;
+        color: var(--secondary-color);
+      }
+    }
+
+    .header-btn:not(.hidden)+.header-title {
+      margin-left: 0;
+    }
   }
-}
-
-.header-img {
-  width: 50px;
-  margin-left: 8px;
-}
-
-.header-btn {
-  width: 55px;
-  background: none;
-  border: none;
-  color: var(--primary-color);
-  cursor: pointer;
-
-  .edit-btn {
-    width: 32px;
-    height: 32px;
-    color: var(--secondary-color);
-  }
-}
-
-.header-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  text-align: center;
-  flex: 1;
-}
-
-.header-btn:not(.hidden)+.header-title {
-  margin-left: 0;
 }

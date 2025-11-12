@@ -17,12 +17,11 @@ export default class GymLogService {
     db.version(1).stores({
       routines: "++id",
       exercises: "++id, type",
-      routineExercises: "++id, routineId, exerciseId, isDone",
-      routineExerciseSets: "++id, planId, isDone"
+      routineWorkouts: "++id, routineId, exerciseId, isDone",
+      routineWorkoutSets: "++id, planId, isDone"
     });
 
     db.on("populate", async () => {
-
       await db.routines.bulkPut([
         { title: "Treino A", description: "Peito/Tríceps", icon: "supino.png" },
         { title: "Treino B", description: "Costas/Bíceps", icon: "biceps.png" },
@@ -30,7 +29,6 @@ export default class GymLogService {
       ]);
 
       await db.exercises.bulkPut([
-
         // --- Peito ---
         { description: "Supino Reto (Barra)", type: "Peito" },
         { description: "Supino Inclinado (Barra)", type: "Peito" },
@@ -114,51 +112,24 @@ export default class GymLogService {
     this.#db = db;
   }
 
-  // Routine 
-  async save({ title, description, icon }) {
-    const routineRecord = {
-      title,
-      description,
-      icon,
-    };
-    try {
-      const savedId = await this.#db.routines.put(routineRecord);
-      console.log(`🚩 [GymLogService.js] routine ${title} saved`);
-      return { id: savedId, ...routineRecord };
-    } catch (error) {
-      console.error(`Error when adding routine: ${title}`, error);
-    }
-  }
-
-  async getAllRoutines() {
-    return this.#db.routines.toArray();
-  }
-
-  async getRoutineById(routineId) {
-    return this.#db.routines.get(routineId);
-  }
-
-  async delete(routineId) {
-    await this.#db.routines.delete(routineId);
-    console.log(`[TodoService.js] Routine with ID ${routineId} has been deleted`);
-    return true;
-  }
-
-  async getExercicesByRoutineId(routineId) {
-    const plannedItems = await this.#db.routineExercises
+  // ###########################  
+  //      Workout CRUD
+  // ###########################  
+  async getWorkoutsByRoutineId(routineId) {
+    const plannedItems = await this.#db.routineWorkouts
       .where('routineId')
       .equals(routineId)
       .toArray();
     if (plannedItems.length === 0) return [];
-    const exerciseIds = plannedItems.map(item => item.exerciseId);
-    const exerciseDetails = await this.#db.exercises
+    const workoutIds = plannedItems.map(item => item.workoutId);
+    const workoutDetails = await this.#db.exercises
       .where('id')
-      .anyOf(exerciseIds)
+      .anyOf(workoutIds)
       .toArray();
-    const exerciseMap = new Map(exerciseDetails.map(ex => [ex.id, ex]));
+    const workoutMap = new Map(workoutDetails.map(ex => [ex.id, ex]));
 
-    const fullExercises = plannedItems.map(plan => {
-      const details = exerciseMap.get(plan.exerciseId);
+    const fullWorkouts = plannedItems.map(plan => {
+      const details = workoutMap.get(plan.workoutId);
       return {
         planId: plan.id,
         routineId: plan.routineId,
@@ -166,38 +137,39 @@ export default class GymLogService {
         targetReps: plan.targetReps,
         targetWeight: plan.targetWeight,
         isDone: plan.isDone,
-        exerciseId: plan.exerciseId,
+        workoutId: plan.workoutId,
         description: details ? details.description : 'Exercício não encontrado',
         type: details ? details.type : 'N/A'
       };
     });
-    return fullExercises;
+    return fullWorkouts;
   }
 
-  async getSetsForExercise(planId) {
-    return this.#db.routineExerciseSets
+  async getSetsForWorkout(planId) {
+    return this.#db.routineWorkoutSets
       .where('planId')
       .equals(planId)
       .sortBy('setNumber');
   }
 
   async updateSetState(setId, isDone) {
-    return this.#db.routineExerciseSets.update(setId, { isDone: isDone });
+    return this.#db.routineWorkoutSets.update(setId, { isDone: isDone });
   }
-  async updateExerciseState(planId, isDone) {
-    return this.#db.routineExercises.update(planId, { isDone: isDone });
+
+  async updateWorkoutState(planId, isDone) {
+    return this.#db.routineWorkouts.update(planId, { isDone: isDone });
   }
 
   async resetWorkoutState() {
     console.log(`🚩 Resetando estado de TODOS os treinos...`);
     try {
-      await this.#db.routineExercises.toCollection().modify(exercise => {
-        if (exercise.isDone === true) {
-          exercise.isDone = false;
+      await this.#db.routineWorkouts.toCollection().modify(workout => {
+        if (workout.isDone === true) {
+          workout.isDone = false;
         }
       });
 
-      await this.#db.routineExerciseSets.toCollection().modify(set => {
+      await this.#db.routineWorkoutSets.toCollection().modify(set => {
         if (set.isDone === true) {
           set.isDone = false;
         }
@@ -228,6 +200,14 @@ export default class GymLogService {
     }
   }
 
+  async getAllRoutines() {
+    return this.#db.routines.toArray();
+  }
+
+  async getRoutineById(routineId) {
+    return this.#db.routines.get(routineId);
+  }
+
   async updateRoutine(routineId, changes) {
     try {
       await this.#db.routines.update(routineId, changes);
@@ -239,7 +219,7 @@ export default class GymLogService {
 
   async deleteRoutineAndData(routineId) {
     try {
-      const plansToDelete = await this.#db.routineExercises
+      const plansToDelete = await this.#db.routineWorkouts
         .where('routineId')
         .equals(routineId)
         .toArray();
@@ -247,13 +227,13 @@ export default class GymLogService {
       const planIds = plansToDelete.map(plan => plan.id);
 
       if (planIds.length > 0) {
-        await this.#db.routineExerciseSets
+        await this.#db.routineWorkoutSets
           .where('planId')
           .anyOf(planIds)
           .delete();
         console.log(`🚩 Sets deletados para a rotina ${routineId}`);
 
-        await this.#db.routineExercises
+        await this.#db.routineWorkouts
           .where('id')
           .anyOf(planIds)
           .delete();
@@ -268,23 +248,23 @@ export default class GymLogService {
     }
   }
 
-  async addExerciseToRoutinePlan(planDetails) {
+  async addWorkoutToRoutinePlan(planDetails) {
     try {
       await this.#db.transaction(
         'rw',
-        this.#db.routineExercises,
-        this.#db.routineExerciseSets,
+        this.#db.routineWorkouts,
+        this.#db.routineWorkoutSets,
         async () => {
 
           const planData = {
             routineId: planDetails.routineId,
-            exerciseId: planDetails.exerciseId,
+            workoutId: planDetails.workoutId,
             targetSets: planDetails.targetSets,
             targetReps: planDetails.targetReps,
             targetWeight: planDetails.targetWeight,
             isDone: false
           };
-          const newPlanId = await this.#db.routineExercises.put(planData);
+          const newPlanId = await this.#db.routineWorkouts.put(planData);
           const setsToCreate = [];
           for (let i = 0; i < planDetails.targetSets; i++) {
             setsToCreate.push({
@@ -293,8 +273,8 @@ export default class GymLogService {
               isDone: false
             });
           }
-          await this.#db.routineExerciseSets.bulkPut(setsToCreate);
-          console.log(`🚩 Exercício ${planDetails.exerciseId} adicionado ao plano ${newPlanId} com ${setsToCreate.length} sets.`);
+          await this.#db.routineWorkoutSets.bulkPut(setsToCreate);
+          console.log(`🚩 Exercício ${planDetails.workoutId} adicionado ao plano ${newPlanId} com ${setsToCreate.length} sets.`);
         });
 
     } catch (error) {
@@ -302,14 +282,14 @@ export default class GymLogService {
     }
   }
 
-  async deleteExerciseFromPlan(planId) {
+  async deleteWorkoutFromPlan(planId) {
     try {
       await this.#db.transaction(
         'rw',
-        this.#db.routineExercises,
-        this.#db.routineExerciseSets,
+        this.#db.routineWorkouts,
+        this.#db.routineWorkoutSets,
         async () => {
-          await this.#db.routineExerciseSets
+          await this.#db.routineWorkoutSets
             .where('planId')
             .equals(planId)
             .delete();

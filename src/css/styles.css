@@ -17,6 +17,7 @@
   --btn-text: #282c34;
 
   --primary-color: #eeeeee;
+  --subtitle-color: #666666;
   --secondary-color: #ffc621;
 
   --confirm-color: #154200;
@@ -34,6 +35,9 @@
   --delete-color: #b10606;
   --delete-color-hover: #690303;
   --delete-text: #ffa4a4;
+
+  --success-color: #50da00;
+  --error-color: #fa2121;
 
   --header-bg: #15171a;
 
@@ -63,7 +67,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* border: 1px solid red; */
 }
 
 .hidden {
