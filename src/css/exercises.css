@@ -124,7 +124,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: var(--primary-color);
+      background-color: var(--secondary-color);
       color: var(--button-color);
     }
 
